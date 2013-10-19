@@ -11,14 +11,20 @@
 # https://github.com/requests/requests-oauthlib/pull/43#issuecomment-18158871
 # If you are able to fix this properly, let me know.
 #
+# MongoDB support requires python2-pymongo.
+#
 # You will need both a 'Consumer key/Consumer secret' and an 'Access token/Access
 # token secret' for this example to work. Check the docs for info on how to get this.
 
 from twython import Twython
 from twython import TwythonStreamer
+from pymongo import MongoClient
+
+collection = None
 
 class MyStreamer(TwythonStreamer):
     def on_success(self, data):
+        collection.insert(data)
         if 'text' in data:
             print data['text'].encode('utf-8')
 
@@ -27,6 +33,10 @@ class MyStreamer(TwythonStreamer):
         self.disconnect()
 
 if __name__ == '__main__':
+    client = MongoClient()
+    db = client.test_database
+    collection = db.test_collection
+
     stream = MyStreamer(APP_KEY, APP_SECRET,
                     TOKEN_KEY, TOKEN_SECRET)
     stream.statuses.filter(locations = '-180,-90,180,90')
