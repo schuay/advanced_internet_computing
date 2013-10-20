@@ -28,12 +28,17 @@ from pymongo import MongoClient
 from twython import Twython
 from twython import TwythonStreamer
 
-collection = None
 CREDENTIALS_FILE = 'credentials.txt'
 
 class MyStreamer(TwythonStreamer):
+    """In addition to initializing the TwythonStreamer class, sets our MongoDB collection
+       so we can persist retrieved tweets."""
+    def __init__(self, app_key, app_secret, oauth_token, oauth_token_secret, collection):
+        super(MyStreamer, self).__init__(app_key, app_secret, oauth_token, oauth_token_secret)
+        self._collection = collection
+
     def on_success(self, data):
-        collection.insert(data)
+        self._collection.insert(data)
         if 'text' in data:
             print data['text'].encode('utf-8')
 
@@ -53,6 +58,7 @@ if __name__ == '__main__':
     stream = MyStreamer(credentials['APP_KEY'],
                         credentials['APP_SECRET'],
                         credentials['TOKEN_KEY'],
-                        credentials['TOKEN_SECRET'])
+                        credentials['TOKEN_SECRET'],
+                        collection)
     stream.statuses.filter(locations = '-180,-90,180,90',
                            language = 'en')
