@@ -15,10 +15,18 @@
 #
 # You will need both a 'Consumer key/Consumer secret' and an 'Access token/Access
 # token secret' for this example to work. Check the docs for info on how to get this.
+# Store these in a file called 'credentials.txt'. An example file is as follows:
+#
+# {"APP_SECRET": "the_app_secret",
+#  "TOKEN_KEY": "the_token_key",
+#  "APP_KEY": "the_app_key",
+#  "TOKEN_SECRET": "the_token_secret"}
 
+import json
+
+from pymongo import MongoClient
 from twython import Twython
 from twython import TwythonStreamer
-from pymongo import MongoClient
 
 collection = None
 
@@ -33,10 +41,16 @@ class MyStreamer(TwythonStreamer):
         self.disconnect()
 
 if __name__ == '__main__':
+    credentials = None
+    with open('credentials.txt', 'r') as f:
+        credentials = json.loads(f.read())
+
     client = MongoClient()
     db = client.test_database
     collection = db.test_collection
 
-    stream = MyStreamer(APP_KEY, APP_SECRET,
-                    TOKEN_KEY, TOKEN_SECRET)
+    stream = MyStreamer(credentials['APP_KEY'],
+                        credentials['APP_SECRET'],
+                        credentials['TOKEN_KEY'],
+                        credentials['TOKEN_SECRET'])
     stream.statuses.filter(locations = '-180,-90,180,90')
