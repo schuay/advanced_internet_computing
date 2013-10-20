@@ -12,6 +12,7 @@
 # If you are able to fix this properly, let me know.
 #
 # MongoDB support requires python2-pymongo.
+# The progressbar requires python2-progressbar.
 #
 # You will need both a 'Consumer key/Consumer secret' and an 'Access token/Access
 # token secret' for this example to work. Check the docs for info on how to get this.
@@ -27,6 +28,7 @@ import json
 import signal
 import sys
 
+from progressbar import ProgressBar, AnimatedMarker, Timer, Counter, UnknownLength
 from pymongo import MongoClient
 from twython import Twython
 from twython import TwythonStreamer
@@ -41,6 +43,7 @@ verbose = False
 def signal_handler(signal, frame):
     if stream is not None:
         print("Goodbye!")
+        stream.flush()
         stream.disconnect()
 
 class MyStreamer(TwythonStreamer):
@@ -48,21 +51,38 @@ class MyStreamer(TwythonStreamer):
        so we can persist retrieved tweets."""
     def __init__(self, app_key, app_secret, oauth_token, oauth_token_secret, collection):
         super(MyStreamer, self).__init__(app_key, app_secret, oauth_token, oauth_token_secret)
-        self._collection = collection
         self._buffer = []
+        self._collection = collection
+        self.__tweet_count = 0
+        if not verbose:
+            self._progressbar = ProgressBar(widgets = [ AnimatedMarker()
+                                                      , ' '
+                                                      , Timer()
+                                                      , ', # of Tweets: '
+                                                      , Counter()
+                                                      ],
+                                            maxval = UnknownLength)
+            self._progressbar.start()
 
     def on_success(self, data):
         self._buffer.append(data)
+        self.__tweet_count += 1
+
         if verbose and 'text' in data:
             print data['text'].encode('utf-8')
+        elif not verbose:
+            self._progressbar.update(self.__tweet_count)
 
         if len(self._buffer) > CHUNK_SIZE:
-            self._collection.insert(self._buffer)
-            del self._buffer[:]
+            self.flush()
 
     def on_error(self, status_code, data):
         print status_code
         self.disconnect()
+
+    def flush(self):
+        self._collection.insert(self._buffer)
+        del self._buffer[:]
 
 if __name__ == '__main__':
     opts, args = getopt.getopt(sys.argv[1:], "v")
