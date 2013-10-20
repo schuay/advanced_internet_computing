@@ -23,6 +23,7 @@
 #  "TOKEN_SECRET": "the_token_secret"}
 
 import json
+import signal
 
 from pymongo import MongoClient
 from twython import Twython
@@ -30,6 +31,13 @@ from twython import TwythonStreamer
 
 CREDENTIALS_FILE = 'credentials.txt'
 WORLD = '-180,-90,180,90'
+
+stream = None
+
+def signal_handler(signal, frame):
+    if stream is not None:
+        print("Goodbye!")
+        stream.disconnect()
 
 class MyStreamer(TwythonStreamer):
     """In addition to initializing the TwythonStreamer class, sets our MongoDB collection
@@ -48,6 +56,8 @@ class MyStreamer(TwythonStreamer):
         self.disconnect()
 
 if __name__ == '__main__':
+    signal.signal(signal.SIGINT, signal_handler)
+
     with open(CREDENTIALS_FILE, 'r') as f:
         credentials = json.loads(f.read())
 
