@@ -29,6 +29,7 @@ from pymongo import MongoClient
 from twython import Twython
 from twython import TwythonStreamer
 
+CHUNK_SIZE = 1024
 CREDENTIALS_FILE = 'credentials.txt'
 WORLD = '-180,-90,180,90'
 
@@ -45,11 +46,16 @@ class MyStreamer(TwythonStreamer):
     def __init__(self, app_key, app_secret, oauth_token, oauth_token_secret, collection):
         super(MyStreamer, self).__init__(app_key, app_secret, oauth_token, oauth_token_secret)
         self._collection = collection
+        self._buffer = []
 
     def on_success(self, data):
-        self._collection.insert(data)
+        self._buffer.append(data)
         if 'text' in data:
             print data['text'].encode('utf-8')
+
+        if len(self._buffer) > CHUNK_SIZE:
+            self._collection.insert(self._buffer)
+            del self._buffer[:]
 
     def on_error(self, status_code, data):
         print status_code
