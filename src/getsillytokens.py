@@ -1,7 +1,12 @@
 #!/bin/python2
 
-from twython import Twython
+import json
+import pprint
 import sys
+
+from twython import Twython
+
+CREDENTIALS_FILE = 'credentials.txt'
 
 if __name__ == '__main__':
     sys.stdout.write("Enter app key: ")
@@ -15,7 +20,7 @@ if __name__ == '__main__':
     tokenKey = auth['oauth_token']
     tokenSecret = auth['oauth_token_secret']
 
-    print "Direct your user to this URL and have her/him give you the PIN:"
+    print "Visit this URL to get your PIN:"
     print auth['auth_url']
 
     sys.stdout.write("Enter the PIN: ")
@@ -28,7 +33,15 @@ if __name__ == '__main__':
     tokenKey = final_step['oauth_token']
     tokenSecret = final_step['oauth_token_secret']
 
-    print "APP_KEY = \"" + appKey + "\""
-    print "APP_SECRET = \"" + appSecret + "\""
-    print "TOKEN_KEY = \"" + tokenKey + "\""
-    print "TOKEN_SECRET = \"" + tokenSecret + "\""
+    credentials = { 'APP_KEY': appKey
+                  , 'APP_SECRET': appSecret
+                  , 'TOKEN_KEY': tokenKey
+                  , 'TOKEN_SECRET': tokenSecret
+                  }
+
+    pprint.pprint(credentials)
+
+    with open(CREDENTIALS_FILE, 'w') as f:
+        f.write(json.dumps(credentials))
+    
+    print "Credentials written to {}".format(CREDENTIALS_FILE)
