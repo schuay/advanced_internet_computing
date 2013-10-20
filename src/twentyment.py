@@ -29,6 +29,7 @@ from twython import Twython
 from twython import TwythonStreamer
 
 CREDENTIALS_FILE = 'credentials.txt'
+WORLD = '-180,-90,180,90'
 
 class MyStreamer(TwythonStreamer):
     """In addition to initializing the TwythonStreamer class, sets our MongoDB collection
@@ -47,18 +48,19 @@ class MyStreamer(TwythonStreamer):
         self.disconnect()
 
 if __name__ == '__main__':
-    credentials = None
     with open(CREDENTIALS_FILE, 'r') as f:
         credentials = json.loads(f.read())
 
-    client = MongoClient()
-    db = client.test_database
-    collection = db.test_collection
+    try:
+        client = MongoClient()
+        collection = client.test_database.test_collection
 
-    stream = MyStreamer(credentials['APP_KEY'],
-                        credentials['APP_SECRET'],
-                        credentials['TOKEN_KEY'],
-                        credentials['TOKEN_SECRET'],
-                        collection)
-    stream.statuses.filter(locations = '-180,-90,180,90',
-                           language = 'en')
+        stream = MyStreamer(credentials['APP_KEY'],
+                            credentials['APP_SECRET'],
+                            credentials['TOKEN_KEY'],
+                            credentials['TOKEN_SECRET'],
+                            collection)
+        stream.statuses.filter(locations = WORLD,
+                               language = 'en')
+    finally:
+        client.close()
