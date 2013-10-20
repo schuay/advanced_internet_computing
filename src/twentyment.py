@@ -22,8 +22,10 @@
 #  "APP_KEY": "the_app_key",
 #  "TOKEN_SECRET": "the_token_secret"}
 
+import getopt
 import json
 import signal
+import sys
 
 from pymongo import MongoClient
 from twython import Twython
@@ -34,6 +36,7 @@ CREDENTIALS_FILE = 'credentials.txt'
 WORLD = '-180,-90,180,90'
 
 stream = None
+verbose = False
 
 def signal_handler(signal, frame):
     if stream is not None:
@@ -50,7 +53,7 @@ class MyStreamer(TwythonStreamer):
 
     def on_success(self, data):
         self._buffer.append(data)
-        if 'text' in data:
+        if verbose and 'text' in data:
             print data['text'].encode('utf-8')
 
         if len(self._buffer) > CHUNK_SIZE:
@@ -62,6 +65,11 @@ class MyStreamer(TwythonStreamer):
         self.disconnect()
 
 if __name__ == '__main__':
+    opts, args = getopt.getopt(sys.argv[1:], "v")
+    for o, a in opts:
+        if o == "-v":
+            verbose = True
+
     signal.signal(signal.SIGINT, signal_handler)
 
     with open(CREDENTIALS_FILE, 'r') as f:
