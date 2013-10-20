@@ -29,6 +29,7 @@ from twython import Twython
 from twython import TwythonStreamer
 
 collection = None
+CREDENTIALS_FILE = 'credentials.txt'
 
 class MyStreamer(TwythonStreamer):
     def on_success(self, data):
@@ -42,7 +43,7 @@ class MyStreamer(TwythonStreamer):
 
 if __name__ == '__main__':
     credentials = None
-    with open('credentials.txt', 'r') as f:
+    with open(CREDENTIALS_FILE, 'r') as f:
         credentials = json.loads(f.read())
 
     client = MongoClient()
