@@ -53,4 +53,5 @@ if __name__ == '__main__':
                         credentials['APP_SECRET'],
                         credentials['TOKEN_KEY'],
                         credentials['TOKEN_SECRET'])
-    stream.statuses.filter(locations = '-180,-90,180,90')
+    stream.statuses.filter(locations = '-180,-90,180,90',
+                           language = 'en')
