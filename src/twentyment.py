@@ -29,7 +29,7 @@ import signal
 import sys
 
 from progressbar import ProgressBar, AnimatedMarker, Timer, Counter, UnknownLength
-from pymongo import MongoClient
+from tweetstore import  TweetStore
 from twython import Twython
 from twython import TwythonStreamer
 
@@ -47,12 +47,12 @@ def signal_handler(signal, frame):
         stream.disconnect()
 
 class MyStreamer(TwythonStreamer):
-    """In addition to initializing the TwythonStreamer class, sets our MongoDB collection
+    """In addition to initializing the TwythonStreamer class, sets our tweet store
        so we can persist retrieved tweets."""
-    def __init__(self, app_key, app_secret, oauth_token, oauth_token_secret, collection):
+    def __init__(self, app_key, app_secret, oauth_token, oauth_token_secret, store):
         super(MyStreamer, self).__init__(app_key, app_secret, oauth_token, oauth_token_secret)
         self._buffer = []
-        self._collection = collection
+        self._store = store
         self.__tweet_count = 0
         if not verbose:
             self._progressbar = ProgressBar(widgets = [ AnimatedMarker()
@@ -81,7 +81,7 @@ class MyStreamer(TwythonStreamer):
         self.disconnect()
 
     def flush(self):
-        self._collection.insert(self._buffer)
+        self._store.put(self._buffer)
         del self._buffer[:]
 
 if __name__ == '__main__':
@@ -96,15 +96,13 @@ if __name__ == '__main__':
         credentials = json.loads(f.read())
 
     try:
-        client = MongoClient()
-        collection = client.test_database.test_collection
-
+        store = TweetStore("test_database")
         stream = MyStreamer(credentials['APP_KEY'],
                             credentials['APP_SECRET'],
                             credentials['TOKEN_KEY'],
                             credentials['TOKEN_SECRET'],
-                            collection)
+                            store)
         stream.statuses.filter(locations = WORLD,
                                language = 'en')
     finally:
-        client.close()
+        store.close()
