@@ -8,8 +8,8 @@ class TweetStore:
     def __init__(self, dbname):
         self._dbname = dbname
 
-        client = MongoClient()
-        self._collection = client[dbname].test_collection
+        self._client = MongoClient()
+        self._collection = self._client[dbname].test_collection
 
     """Retrieves a list of tweets in twython's format from the database.
     Tweets are filtered by the specified keywords and time range."""
@@ -20,6 +20,10 @@ class TweetStore:
     """Stores the specified tweets into the database."""
     def put(self, tweets):
         self._collection.insert(tweets)
+
+    """Performs final cleanups such as closing the DB connection."""
+    def close(self):
+        self._client.close()
 
 if __name__ == "__main__":
     ts = TweetStore("test_database")
