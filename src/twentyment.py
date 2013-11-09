@@ -96,7 +96,7 @@ if __name__ == '__main__':
         credentials = json.loads(f.read())
 
     try:
-        store = TweetStore("test_database")
+        store = TweetStore("tweets")
         stream = MyStreamer(credentials['APP_KEY'],
                             credentials['APP_SECRET'],
                             credentials['TOKEN_KEY'],
