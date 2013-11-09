@@ -2,6 +2,7 @@ from datetime import datetime
 from pymongo import MongoClient
 
 _CREATED_AT = "created_at"
+_TEXT = "text"
 
 """A (somewhat) generic store for tweets which can be queried by
 key words and time ranges, and filled with a list of tweets."""
@@ -20,8 +21,13 @@ class TweetStore:
     start and end are datetime objects."""
     def get(self, keywords, start, end):
         c = self._collection
-        return c.find({
-            "text": {"$regex": ".*Call.*"}})
+        return c.find(
+                { _TEXT: {"$regex": ".*Richeese.*"}
+                , _CREATED_AT:
+                    { "$gte": start
+                    , "$lte": end
+                    }
+                })
 
     """Twython gives us date fields as strings. This function converts date fields we care
     about (such as "created_at") into proper datetime objects."""
@@ -45,12 +51,7 @@ class TweetStore:
         self._client.close()
 
 if __name__ == "__main__":
-    ts = TweetStore("test_database")
+    ts = TweetStore("tweets")
     for t in ts.get([], datetime(2013, 1, 1), datetime(2999, 1, 1)):
-        print t["text"]
+        print t[_TEXT]
         print t[_CREATED_AT]
-        print type(t[_CREATED_AT])
-        ts._str_to_date(t)
-        print t[_CREATED_AT]
-        print type(t[_CREATED_AT])
-
