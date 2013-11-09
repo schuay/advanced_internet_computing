@@ -37,7 +37,8 @@ class TweetStore:
 
     """Stores the specified tweets into the database."""
     def put(self, tweets):
-        self._collection.insert(tweets)
+        dateified_tweets = map(self._str_to_date, tweets)
+        self._collection.insert(dateified_tweets)
 
     """Performs final cleanups such as closing the DB connection."""
     def close(self):
