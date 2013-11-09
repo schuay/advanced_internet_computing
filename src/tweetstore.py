@@ -52,8 +52,34 @@ class TweetStore:
     def close(self):
         self._client.close()
 
+import getopt
+import sys
+
+def usage():
+    print("USAGE: %s [-d database] [-k keyword] [-s 2013-01-31] [-e 2013-03-22]" %
+            sys.argv[0])
+
 if __name__ == "__main__":
-    ts = TweetStore("tweets")
-    for t in ts.get(["Richeese", "Direction", "early"], datetime(2013, 1, 1), datetime(2999, 1, 1)):
+    db = "tweets"
+    keywords = []
+    start = datetime(2013, 1, 1)
+    end = datetime(2999, 1, 1)
+
+    opts, args = getopt.getopt(sys.argv[1:], "hd:k:s:e:")
+    for o, a in opts:
+        if o == "-d":
+            db = a
+        elif o == "-k":
+            keywords.append(a)
+        elif o == "-s":
+            start = datetime.strptime(a, "%Y-%M-%d")
+        elif o == "-e":
+            end = datetime.strptime(a, "%Y-%M-%d")
+        else:
+            usage()
+            sys.exit(0)
+
+    ts = TweetStore(db)
+    for t in ts.get(keywords, start, end):
         print t[_TEXT]
         print t[_CREATED_AT]
