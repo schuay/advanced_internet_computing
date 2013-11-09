@@ -1,3 +1,5 @@
+#!/bin/python2
+
 import getopt
 import json
 import signal
@@ -9,19 +11,18 @@ from twython import Twython
 CREDENTIALS_FILE = 'credentials.txt'
 
 if __name__ == '__main__':
+    count = sys.maxint
     search_args = { "q": "The Beatles"
-                  , "until": datetime.today().strftime("%Y-%m-%d")
+                  , "until": datetime.now().strftime("%Y-%m-%d")
                   , "lang": 'en'
                   , "result_type": 'recent'
                   , "count": 100
                   }
 
-    opts, args = getopt.getopt(sys.argv[1:], "hm:c:q:u:")
+    opts, args = getopt.getopt(sys.argv[1:], "hc:q:u:")
     for o, a in opts:
         if o == "-c":
-            search_args["count"] = int(a)
-        elif o == "-m":
-            search_args["max_id"] = int(a)
+            count = int(a)
         elif o == "-q":
             search_args["q"] = a
         elif o == "-u":
@@ -39,9 +40,22 @@ if __name__ == '__main__':
         credentials['TOKEN_KEY'],
         credentials['TOKEN_SECRET'])
 
-    # https://dev.twitter.com/docs/api/1.1/get/search/tweets
-    tweets = twitter.search(**search_args)
+    retrieved = 0
+    while True:
+        # https://dev.twitter.com/docs/api/1.1/get/search/tweets
+        result = twitter.search(**search_args)
+        tweets = result["statuses"]
 
-    for tweet in tweets["statuses"]:
-        print tweet["text"], tweet["created_at"], tweet["id"]
-    print tweets["search_metadata"]
+        if len(tweets) == 0:
+            break
+
+        for tweet in tweets:
+            print tweet["created_at"][0:10], tweet["text"]
+
+        retrieved += len(tweets)
+        if retrieved >= count:
+            break
+
+        search_args["max_id"] = min(int(t["id"]) for t in tweets) - 1
+
+    print "Retrieved %d tweets" % retrieved
