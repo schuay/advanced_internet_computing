@@ -8,6 +8,8 @@ _TEXT = "text"
 key words and time ranges, and filled with a list of tweets."""
 class TweetStore:
 
+    # TODO: Add indices on created_at (and maybe text?)
+
     """Initializes this instance with the specified database name."""
     def __init__(self, dbname):
         self._dbname = dbname
