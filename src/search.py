@@ -34,11 +34,8 @@ if __name__ == '__main__':
     with open(CREDENTIALS_FILE, 'r') as f:
         credentials = json.loads(f.read())
 
-    twitter = Twython(
-        credentials['APP_KEY'],
-        credentials['APP_SECRET'],
-        credentials['TOKEN_KEY'],
-        credentials['TOKEN_SECRET'])
+    twitter = Twython(*(credentials[k] for k in ['APP_KEY', 'APP_SECRET',
+                                                 'TOKEN_KEY', 'TOKEN_SECRET']))
 
     retrieved = 0
     while True:
