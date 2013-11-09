@@ -24,7 +24,7 @@ class TweetStore:
     def get(self, keywords, start, end):
         c = self._collection
         return c.find(
-                { _TEXT: {"$regex": ".*Richeese.*"}
+                { _TEXT: {"$regex": "^.*(" + "|".join(keywords) + ").*$"}
                 , _CREATED_AT:
                     { "$gte": start
                     , "$lte": end
@@ -54,6 +54,6 @@ class TweetStore:
 
 if __name__ == "__main__":
     ts = TweetStore("tweets")
-    for t in ts.get([], datetime(2013, 1, 1), datetime(2999, 1, 1)):
+    for t in ts.get(["Richeese", "Direction", "early"], datetime(2013, 1, 1), datetime(2999, 1, 1)):
         print t[_TEXT]
         print t[_CREATED_AT]
