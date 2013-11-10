@@ -5,7 +5,7 @@ import math
 import pickle
 import re
 
-from nltk.classify import NaiveBayesClassifier
+from nltk.classify import NaiveBayesClassifier, apply_features
 
 class Classifier:
     class Sentiment:
@@ -26,23 +26,19 @@ class Classifier:
         with open(filename, 'rb') as f:
             return pickle.load(f)
 
+    """Takes a dictionary with keys: POSITIVE/NEGATIVE, values: list of
+    individual tweets. Returns a classifier object trained on the given training sets."""
     @staticmethod
     def train(training_sets):
         training = []
 
-        for i in training_sets[Classifier.__pos]:
-            if isinstance(i, str):
-                features = [Classifier.__get_string_features(i), Classifier.__pos]
-            # TODO: do for other input
-            training.append(features)
+        # Since we have a rather large amount of training data, build features
+        # lazily to avoid running out of memory.
+        tuple_set = [(x, cl) for cl in [Classifier.__pos, Classifier.__neg]
+                             for x in training_sets[cl]]
+        train_set = apply_features(Classifier.__get_string_features, tuple_set)
 
-        for i in training_sets[Classifier.__neg]:
-            if isinstance(i, str):
-                features = [Classifier.__get_string_features(i), Classifier.__neg]
-            # TODO: do for other input
-            training.append(features)
-
-        return Classifier(NaiveBayesClassifier.train(training))
+        return Classifier(NaiveBayesClassifier.train(train_set))
 
     @staticmethod
     def __get_tweet_features(tweet):
