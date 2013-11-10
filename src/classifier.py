@@ -38,9 +38,10 @@ class Classifier:
         # TODO: parse json and call __get_string_features with the tweet text.
         pass
 
+    """Breaks up text into list of words. Takes a string and returns a dictionary mapping
+    word keys to True values."""
     @staticmethod
     def __get_string_features(string):
-	# simply break up text into list of words
         words = re.findall(r"[\w']+|[.,!?;]", string)
         return dict([(word, True) for word in words])
 
