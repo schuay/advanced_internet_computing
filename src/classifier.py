@@ -7,17 +7,10 @@ import re
 
 from nltk.classify import NaiveBayesClassifier, apply_features
 
+NEG = 0
+POS = 1
+
 class Classifier:
-    class Sentiment:
-        NEGATIVE = 0
-        POSITIVE = 1
-
-    assert Sentiment.NEGATIVE == 0
-    assert Sentiment.POSITIVE == 1
-
-    __pos = Sentiment.POSITIVE
-    __neg = Sentiment.NEGATIVE
-
     def __init__(self, classifier):
         self._nltk_classifier = classifier
 
@@ -34,7 +27,7 @@ class Classifier:
 
         # Since we have a rather large amount of training data, build features
         # lazily to avoid running out of memory.
-        tuple_set = [(x, cl) for cl in [Classifier.__pos, Classifier.__neg]
+        tuple_set = [(x, cl) for cl in [POS, NEG]
                              for x in training_sets[cl]]
         train_set = apply_features(Classifier.__get_string_features, tuple_set)
 
@@ -73,9 +66,6 @@ import sys
 from tweetstore import TweetStore
 
 def evaluate_features(positive, negative, load, save):
-    pos = Classifier.Sentiment.POSITIVE
-    neg = Classifier.Sentiment.NEGATIVE
-
     with open(positive, 'r') as f:
         posTweets = re.split(r'\n', f.read())
     with open(negative, 'r') as f:
@@ -85,17 +75,20 @@ def evaluate_features(positive, negative, load, save):
     posCutoff = int(math.floor(len(posTweets)*3/4))
     negCutoff = int(math.floor(len(negTweets)*3/4))
 
-    trainSets = [list() for x in [pos, neg]]
-    trainSets[pos] = posTweets[:posCutoff]
-    trainSets[neg] = negTweets[:negCutoff]
-    nTrain = len(trainSets[pos]) + len(trainSets[neg])
-
     if load:
         print 'loading classifier \'%s\'' % load
         classifier = Classifier.load(load)
     else:
         print 'training new classifier'
+
+        trainSets = [list() for x in [POS, NEG]]
+        trainSets[POS] = posTweets[:posCutoff]
+        trainSets[NEG] = negTweets[:negCutoff]
+        nTrain = len(trainSets[POS]) + len(trainSets[NEG])
+
         classifier = Classifier.train(trainSets);
+
+        trainSets = None
 
     if save:
         print 'saving classifier as \'%s\'' % save
@@ -106,21 +99,21 @@ def evaluate_features(positive, negative, load, save):
     testFeatures = []
     for i in posTweets[posCutoff:]:
         words = re.findall(r"[\w']+|[.,!?;]", i)
-        tweetFeatures = [dict([(word, True) for word in words]), pos]
+        tweetFeatures = [dict([(word, True) for word in words]), POS]
         testFeatures.append(tweetFeatures)
 
-        t = [i, pos]
+        t = [i, POS]
         testTweets.append(t)
     for i in negTweets[negCutoff:]:
         words = re.findall(r"[\w']+|[.,!?;]", i)
-        tweetFeatures = [dict([(word, True) for word in words]), neg]
+        tweetFeatures = [dict([(word, True) for word in words]), NEG]
         testFeatures.append(tweetFeatures)
 
-        t = [i, neg]
+        t = [i, NEG]
         testTweets.append(t)
 
-    referenceSets = [set() for x in [pos, neg]]
-    testSets = [set() for x in [pos, neg]]
+    referenceSets = [set() for x in [POS, NEG]]
+    testSets = [set() for x in [POS, NEG]]
     for i, (tweet, label) in enumerate(testTweets):
         referenceSets[label].add(i)
         predicted = classifier.classify_string(tweet)
@@ -129,10 +122,10 @@ def evaluate_features(positive, negative, load, save):
     classifier = classifier._nltk_classifier
     print 'train on %d instances, test on %d instances' % (nTrain, len(testTweets))
     print 'accuracy:', nltk.classify.util.accuracy(classifier, testFeatures)
-    print 'pos precision:', nltk.metrics.precision(referenceSets[pos], testSets[pos])
-    print 'pos recall:', nltk.metrics.recall(referenceSets[pos], testSets[pos])
-    print 'neg precision:', nltk.metrics.precision(referenceSets[neg], testSets[neg])
-    print 'neg recall:', nltk.metrics.recall(referenceSets[neg], testSets[neg])
+    print 'pos precision:', nltk.metrics.precision(referenceSets[POS], testSets[POS])
+    print 'pos recall:', nltk.metrics.recall(referenceSets[POS], testSets[POS])
+    print 'neg precision:', nltk.metrics.precision(referenceSets[NEG], testSets[NEG])
+    print 'neg recall:', nltk.metrics.recall(referenceSets[NEG], testSets[NEG])
 
 def usage():
     print("USAGE: %s [-p positive_tweets] [-n negative_tweets] [-s classifier] [-l classifier]" %
