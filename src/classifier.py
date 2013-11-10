@@ -23,10 +23,8 @@ class Classifier:
 
     @staticmethod
     def load(filename):
-        f = open(filename, 'rb')
-        classifier = pickle.load(f)
-        f.close()
-        return classifier
+        with open(filename, 'rb') as f:
+            return pickle.load(f)
 
     @staticmethod
     def train(training_sets):
@@ -69,9 +67,8 @@ class Classifier:
         return self.__classify_features(features)
 
     def save(self, filename):
-        f = open(filename, 'wb')
-        pickle.dump(self, f)
-        f.close()
+        with open(filename, 'wb') as f:
+            pickle.dump(self, f)
 
 import getopt
 import nltk
@@ -83,10 +80,10 @@ def evaluate_features(positive, negative, load, save):
     pos = Classifier.Sentiment.POSITIVE
     neg = Classifier.Sentiment.NEGATIVE
 
-    posTweets = open(positive, 'r')
-    negTweets = open(negative, 'r')
-    posTweets = re.split(r'\n', posTweets.read())
-    negTweets = re.split(r'\n', negTweets.read())
+    with open(positive, 'r') as f:
+        posTweets = re.split(r'\n', f.read())
+    with open(negative, 'r') as f:
+        negTweets = re.split(r'\n', f.read())
  
     #selects 3/4 of the features to be used for training and 1/4 to be used for testing
     posCutoff = int(math.floor(len(posTweets)*3/4))
