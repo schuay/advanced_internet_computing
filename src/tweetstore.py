@@ -38,6 +38,9 @@ class TweetStore:
     """Twython gives us date fields as strings. This function converts date fields we care
     about (such as "created_at") into proper datetime objects."""
     def _str_to_date(self, tweet):
+        if _CREATED_AT not in tweet:
+            tweet[_CREATED_AT] = datetime.now()
+            return tweet
         if type(tweet[_CREATED_AT]) is datetime:
             return tweet
         # strptime does not always accept %z for the timezone in 2.7, so we have
