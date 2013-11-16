@@ -11,7 +11,7 @@ import getopt
 import json
 import sys
 
-CHUNK_SIZE = 1024
+CHUNK_SIZE = 2**15
 
 def usage():
     print("USAGE: %s [-f file] [-d database]" % sys.argv[0])
