@@ -1,14 +1,14 @@
 from datetime import datetime
 from pymongo import MongoClient
+from pymongo.errors import DuplicateKeyError
 
 _CREATED_AT = "created_at"
+_ID = "id"
 _TEXT = "text"
 
 """A (somewhat) generic store for tweets which can be queried by
 key words and time ranges, and filled with a list of tweets."""
 class TweetStore:
-
-    # TODO: Add indices on created_at (and maybe text?)
 
     """Initializes this instance with the specified database name."""
     def __init__(self, dbname):
@@ -16,6 +16,10 @@ class TweetStore:
 
         self._client = MongoClient()
         self._collection = self._client[dbname].test_collection
+
+        self._collection.ensure_index(_CREATED_AT)
+        self._collection.ensure_index(_ID, unique = True, drop_dups = True)
+        # self._collection.ensure_index([(_TEXT, "text")]) Requires enabled text search on server
 
     """Retrieves a list of tweets in twython's format from the database.
     Tweets are filtered by the specified keywords and time range.
@@ -46,7 +50,10 @@ class TweetStore:
     """Stores the specified tweets into the database."""
     def put(self, tweets):
         dateified_tweets = map(self._str_to_date, tweets)
-        self._collection.insert(dateified_tweets)
+        try:
+            self._collection.insert(dateified_tweets, continue_on_error = True)
+        except DuplicateKeyError:
+            pass # Ignored.
 
     """Performs final cleanups such as closing the DB connection."""
     def close(self):
