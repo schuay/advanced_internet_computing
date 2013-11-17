@@ -1,6 +1,5 @@
 #!/bin/python2
 
-import json
 import math
 import pickle
 import re
@@ -10,9 +9,32 @@ from nltk.classify import NaiveBayesClassifier, apply_features
 NEG = 0
 POS = 1
 
+class FeatureSelectionI:
+    def select_features(self, obj):
+        raise NotImplementedError("Please implement this yourself.")
+
+class AllWords(FeatureSelectionI):
+    @staticmethod
+    def __get_tweet_features(tweet):
+        return AllWords.__get_string_features(tweet["text"])
+
+    """Breaks up text into list of words. Takes a string and returns a dictionary mapping
+    word keys to True values."""
+    @staticmethod
+    def __get_string_features(string):
+        words = re.findall(r"[\w']+|[.,!?;]", string)
+        return dict([(word, True) for word in words])
+
+    def select_features(self, obj):
+        try:
+            return AllWords.__get_tweet_features(obj)
+        except:
+            return AllWords.__get_string_features(obj)
+
 class Classifier:
-    def __init__(self, classifier, train_size):
+    def __init__(self, classifier, feature_selection, train_size):
         self.__nltk_classifier = classifier
+        self.__fs = feature_selection
         self.__train_size = train_size
 
     @staticmethod
@@ -23,22 +45,22 @@ class Classifier:
     """Takes a dictionary with keys: POSITIVE/NEGATIVE, values: list of
     individual tweets. Returns a classifier object trained on the given training sets."""
     @staticmethod
-    def train(training_sets):
+    def train(training_sets, feature_selection=AllWords()):
         training = []
 
         # Since we have a rather large amount of training data, build features
         # lazily to avoid running out of memory.
         tuple_set = [(x, cl) for cl in [POS, NEG]
                              for x in training_sets[cl]]
-        train_set = apply_features(Classifier.__get_features, tuple_set)
+        train_set = apply_features(feature_selection.select_features, tuple_set)
 
-        return Classifier(NaiveBayesClassifier.train(train_set), len(tuple_set))
+        return Classifier(NaiveBayesClassifier.train(train_set), feature_selection, len(tuple_set))
 
     """Evaluates the classifier with the given data sets."""
     def evaluate(self, test_sets):
         tuple_set = [(x, cl) for cl in [POS, NEG]
                              for x in test_sets[cl]]
-        test_set = apply_features(Classifier.__get_features, tuple_set)
+        test_set = apply_features(self.__fs.select_features, tuple_set)
 
         referenceSets = [set() for x in [POS, NEG]]
         testSets = [set() for x in [POS, NEG]]
@@ -54,30 +76,9 @@ class Classifier:
         print 'neg precision:', nltk.metrics.precision(referenceSets[NEG], testSets[NEG])
         print 'neg recall:', nltk.metrics.recall(referenceSets[NEG], testSets[NEG])
 
-    @staticmethod
-    def __get_tweet_features(tweet):
-        return Classifier.__get_string_features(tweet["text"])
-
-    """Breaks up text into list of words. Takes a string and returns a dictionary mapping
-    word keys to True values."""
-    @staticmethod
-    def __get_string_features(string):
-        words = re.findall(r"[\w']+|[.,!?;]", string)
-        return dict([(word, True) for word in words])
-
-    @staticmethod
-    def __get_features(obj):
-        try:
-            return Classifier.__get_tweet_features(obj)
-        except:
-            return Classifier.__get_string_features(obj)
-
-    def __classify_features(self, features):
-        return self.__nltk_classifier.classify(features)
-
     def classify(self, obj):
-        features = Classifier.__get_features(obj)
-        return self.__classify_features(features)
+        features = self.__fs.select_features(obj)
+        return self.__nltk_classifier.classify(features)
 
     def save(self, filename):
         with open(filename, 'wb') as f:
@@ -86,8 +87,6 @@ class Classifier:
 import getopt
 import nltk
 import sys
-
-from tweetstore import TweetStore
 
 def evaluate_features(positive, negative, load, save):
     with open(positive, 'r') as f:

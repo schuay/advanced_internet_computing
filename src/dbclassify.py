@@ -1,4 +1,5 @@
 from classifier import Classifier
+from classifier import AllWords
 from tweetstore import TweetStore
 from tweetstore import _TEXT
 
