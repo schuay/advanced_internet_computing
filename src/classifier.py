@@ -31,6 +31,48 @@ class AllWords(FeatureSelectionI):
         except:
             return AllWords.__get_string_features(obj)
 
+class AllHashtags(FeatureSelectionI):
+    @staticmethod
+    def __get_tweet_features(tweet):
+        return AllHashtags.__get_string_features(tweet["text"])
+
+    @staticmethod
+    def __get_string_features(string):
+        words = re.findall(r"#[\w']+", string)
+        return dict([(word, True) for word in words])
+
+    def select_features(self, obj):
+        try:
+            return AllHashtags.__get_tweet_features(obj)
+        except:
+            return AllHashtags.__get_string_features(obj)
+
+"""Applies the feature selections in list that yields features."""
+class AnyFeatures(FeatureSelectionI):
+    def __init__(self, selections):
+	self.__selections = selections;
+
+    def select_features(self, obj):
+        for sel in self.__selections:
+            features = sel.select_features(obj)
+            if (features):
+                return features
+
+        return dict()
+
+"""Applies all feature selections in list.
+If two methods yield the same feature, the last one is used."""
+class AllFeatures(FeatureSelectionI):
+    def __init__(self, selections):
+	self.__selections = selections;
+
+    def select_features(self, obj):
+        features = dict()
+        for sel in self.__selections:
+            features.update(sel.select_features(obj))
+
+        return features
+
 class Classifier:
     def __init__(self, classifier, feature_selection, train_size):
         self.__nltk_classifier = classifier
@@ -109,7 +151,7 @@ def evaluate_features(positive, negative, load, save):
         trainSets[POS] = posTweets[:posCutoff]
         trainSets[NEG] = negTweets[:negCutoff]
 
-        classifier = Classifier.train(trainSets);
+        classifier = Classifier.train(trainSets, AllWords());
 
         trainSets = None
 
