@@ -30,7 +30,7 @@ class Classifier:
         # lazily to avoid running out of memory.
         tuple_set = [(x, cl) for cl in [POS, NEG]
                              for x in training_sets[cl]]
-        train_set = apply_features(Classifier.__get_string_features, tuple_set)
+        train_set = apply_features(Classifier.__get_features, tuple_set)
 
         return Classifier(NaiveBayesClassifier.train(train_set), len(tuple_set))
 
@@ -38,13 +38,13 @@ class Classifier:
     def evaluate(self, test_sets):
         tuple_set = [(x, cl) for cl in [POS, NEG]
                              for x in test_sets[cl]]
-        test_set = apply_features(Classifier.__get_string_features, tuple_set)
+        test_set = apply_features(Classifier.__get_features, tuple_set)
 
         referenceSets = [set() for x in [POS, NEG]]
         testSets = [set() for x in [POS, NEG]]
         for i, (tweet, label) in enumerate(tuple_set):
             referenceSets[label].add(i)
-            predicted = self.classify_string(tweet)
+            predicted = self.classify(tweet)
             testSets[predicted].add(i)
 
         print 'train on %d instances, test on %d instances' % (self.__train_size, len(tuple_set))
@@ -56,8 +56,7 @@ class Classifier:
 
     @staticmethod
     def __get_tweet_features(tweet):
-        # TODO: parse json and call __get_string_features with the tweet text.
-        pass
+        return Classifier.__get_string_features(tweet["text"])
 
     """Breaks up text into list of words. Takes a string and returns a dictionary mapping
     word keys to True values."""
@@ -66,15 +65,18 @@ class Classifier:
         words = re.findall(r"[\w']+|[.,!?;]", string)
         return dict([(word, True) for word in words])
 
+    @staticmethod
+    def __get_features(obj):
+        try:
+            return Classifier.__get_tweet_features(obj)
+        except:
+            return Classifier.__get_string_features(obj)
+
     def __classify_features(self, features):
         return self.__nltk_classifier.classify(features)
 
-    def classify_string(self, string):
-        features = Classifier.__get_string_features(string)
-        return self.__classify_features(features)
-
-    def classify_tweet(self, tweet):
-        features = Classifier.__get_tweet_features(tweet)
+    def classify(self, obj):
+        features = Classifier.__get_features(obj)
         return self.__classify_features(features)
 
     def save(self, filename):
