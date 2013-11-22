@@ -1,6 +1,8 @@
 from datetime import datetime
 
 CREATED_AT = "created_at"
+ID = "id"
+TEXT = "text"
 
 """This function converts date fields we care
 about (such as "created_at") into proper datetime objects."""
