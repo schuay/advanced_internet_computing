@@ -44,4 +44,4 @@ if __name__ == '__main__':
     with open(CREDENTIALS_FILE, 'w') as f:
         f.write(json.dumps(credentials))
     
-    print "Credentials written to {}".format(CREDENTIALS_FILE)
+    print "Credentials written to %s" % CREDENTIALS_FILE
