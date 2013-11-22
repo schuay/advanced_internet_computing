@@ -189,7 +189,7 @@ if __name__ == '__main__':
     search_to = datetime.utcnow()
     search_kw = "The Beatles"
 
-    opts, args = getopt.getopt(sys.argv[1:], "q:f:t:")
+    opts, args = getopt.getopt(sys.argv[1:], "q:f:t:h")
     for o, a in opts:
         if o == "-f":
             search_from = datetime.strptime(a, "%Y-%m-%d")
