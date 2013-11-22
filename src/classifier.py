@@ -4,6 +4,8 @@ import math
 import pickle
 import re
 
+import tweet
+
 from nltk.classify import NaiveBayesClassifier, apply_features
 
 NEG = 0
@@ -15,8 +17,8 @@ class FeatureSelectionI:
 
 class AllWords(FeatureSelectionI):
     @staticmethod
-    def __get_tweet_features(tweet):
-        return AllWords.__get_string_features(tweet["text"])
+    def __get_tweet_features(t):
+        return AllWords.__get_string_features(t[tweet.TEXT])
 
     """Breaks up text into list of words. Takes a string and returns a dictionary mapping
     word keys to True values."""
@@ -33,8 +35,8 @@ class AllWords(FeatureSelectionI):
 
 class AllHashtags(FeatureSelectionI):
     @staticmethod
-    def __get_tweet_features(tweet):
-        return AllHashtags.__get_string_features(tweet["text"])
+    def __get_tweet_features(t):
+        return AllHashtags.__get_string_features(t[tweet.TEXT])
 
     @staticmethod
     def __get_string_features(string):
@@ -106,9 +108,9 @@ class Classifier:
 
         referenceSets = [set() for x in [POS, NEG]]
         testSets = [set() for x in [POS, NEG]]
-        for i, (tweet, label) in enumerate(tuple_set):
+        for i, (t, label) in enumerate(tuple_set):
             referenceSets[label].add(i)
-            predicted = self.classify(tweet)
+            predicted = self.classify(t)
             testSets[predicted].add(i)
 
         print 'train on %d instances, test on %d instances' % (self.__train_size, len(tuple_set))
