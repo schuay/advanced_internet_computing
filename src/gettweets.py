@@ -102,7 +102,6 @@ class SearchThread(threading.Thread):
 
     def run(self):
         store = TweetStore("tweets")
-        count = sys.maxint
         twitter = Twython(self._credentials['APP_KEY'],
                             self._credentials['APP_SECRET'],
                             self._credentials['TOKEN_KEY'],
@@ -114,38 +113,33 @@ class SearchThread(threading.Thread):
                       , "count": 100
                       }
 
-        retrieved = 0 # TODO: Remove retrieved and count
-        while self._loop:
-            # https://dev.twitter.com/docs/api/1.1/get/search/tweets
-            try:
-                result = twitter.search(**search_args)
-                tweets = result["statuses"]
+        try:
+            while self._loop:
+                # https://dev.twitter.com/docs/api/1.1/get/search/tweets
+                try:
+                    result = twitter.search(**search_args)
+                    tweets = result["statuses"]
 
-                if len(tweets) == 0:
-                    break
-
-                for tweet in tweets:
-                    # check date
-                    tweet.to_date(tweet)
-                    if self._search_from <= tweet[tweet.CREATED_AT]:
-                        self._parent.updateSearchProgress()
-                        store.put([tweet])      # TODO: Don't insert 1-by-1.
-                    else:
-                        retrieved = sys.maxint
+                    if len(tweets) == 0:
                         break
 
-                retrieved += len(tweets)
-                if retrieved >= count:
+                    for t in tweets:
+                        # check date
+                        tweet.to_date(tweet)
+                        if self._search_from <= tweet[tweet.CREATED_AT]:
+                            self._parent.updateSearchProgress()
+                            store.put([tweet])      # TODO: Don't insert 1-by-1.
+                        else:
+                            return
+
+                    search_args["max_id"] = min(int(t["id"]) for t in tweets) - 1
+                except TwythonRateLimitError:
+                    print "Rate limit reached, sleeping for %d seconds..." % TIMEOUT
+                    time.sleep(TIMEOUT)
+                except TwythonError:
                     break
-
-                search_args["max_id"] = min(int(t["id"]) for t in tweets) - 1
-            except TwythonRateLimitError:
-                print "Rate limit reached, sleeping for %d seconds..." % TIMEOUT
-                time.sleep(TIMEOUT)
-            except TwythonError:
-                break
-
-        store.close() # TODO: finally: 
+        finally:
+            store.close()
 
 class Manager():
     def init(self, credentials, search_kw, search_from, search_to):
