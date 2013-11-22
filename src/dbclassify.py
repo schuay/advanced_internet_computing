@@ -1,3 +1,5 @@
+#!/bin/python2
+
 from classifier import Classifier
 from classifier import AllWords
 from tweetstore import TweetStore

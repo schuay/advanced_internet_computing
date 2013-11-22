@@ -1,3 +1,5 @@
+#!/bin/python2
+
 from datetime import datetime
 from pymongo import MongoClient
 from pymongo.errors import DuplicateKeyError
