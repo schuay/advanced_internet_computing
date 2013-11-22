@@ -46,6 +46,17 @@ class TweetStore:
         except DuplicateKeyError:
             pass # Ignored.
 
+# TODO: Rename module since it's not only about tweets.
+# TODO: Add tweet_ prefix to get/put. Implement task fn's.
+
+    """Retrieves a task by id, or returns None if not found."""
+    def task_get(self, task_id):
+        pass # TODO
+
+    """Upserts the passed task."""
+    def task_put(self, task):
+        pass # TODO
+
     """Performs final cleanups such as closing the DB connection."""
     def close(self):
         self._client.close()
