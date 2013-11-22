@@ -3,7 +3,9 @@
 from classifier import Classifier
 from classifier import AllWords
 from tweetstore import TweetStore
-from tweetstore import _TEXT
+from aggregator import MeanAggregator
+
+import tweet
 
 import getopt
 import sys
@@ -38,8 +40,15 @@ if __name__ == "__main__":
             sys.exit(0)
 
     classifier = Classifier.load(classifier)
+    aggregator = MeanAggregator()
 
     ts = TweetStore(db)
     for t in ts.get(keywords, start, end):
-        print ("%s -- sentiment: %s" % (t[_TEXT],
-            "positive" if (classifier.classify(t) == 1) else "negative"))
+        s = classifier.classify(t)
+        print ("%s -- sentiment: %s" % (t[tweet.TEXT],
+            "positive" if (s == 1) else "negative"))
+        aggregator.add(t, s)
+
+    print ("Aggregated sentiment: %f" % aggregator.get_sentiment())
+    print ("ID of last tweet: %d" % aggregator.get_last_id())
+    print ("Total number of tweets: %d" % aggregator.get_num())
