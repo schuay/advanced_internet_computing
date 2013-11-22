@@ -7,10 +7,11 @@ import sys
 import thread
 import threading
 import time
+import tweet
 
 from datetime import datetime, timedelta
 from progressbar import ProgressBar, AnimatedMarker, Timer, Counter, UnknownLength
-from tweetstore import  TweetStore
+from tweetstore import TweetStore
 from twython import Twython
 from twython import TwythonStreamer
 from twython import TwythonRateLimitError, TwythonError
@@ -19,7 +20,6 @@ CHUNK_SIZE = 1024
 CREDENTIALS_FILE = 'credentials.txt'
 WORLD = '-180,-90,180,90'
 TIMEOUT = 900
-_CREATED_AT = "created_at"
 
 manager = None
 
@@ -49,8 +49,8 @@ class MyStreamer(TwythonStreamer):
         self.disconnect()
 
     def check_tweets(self, tweets):
-        map(self.parent._str_to_date, tweets)
-        t = [t for t in tweets if t[_CREATED_AT] <= self.search_to]
+        map(tweet.to_date, tweets)
+        t = [t for t in tweets if t[tweet.CREATED_AT] <= self.search_to]
         if len(t) > 0:
             self._store.put(t)
         else:
@@ -126,8 +126,8 @@ class SearchThread(threading.Thread):
 
                 for tweet in tweets:
                     # check date
-                    self.parent._str_to_date(tweet)
-                    if self.search_from <= tweet[_CREATED_AT]:
+                    tweet.to_date(tweet)
+                    if self.search_from <= tweet[tweet.CREATED_AT]:
                         self.parent.updateSearchProgress()
                         store.put([tweet])      # TODO: Don't insert 1-by-1.
                     else:
@@ -169,22 +169,6 @@ class Manager():
 
         while threading.activeCount() > 1:
             time.sleep(0.01)    # Python can't receive signals while blocked in thread.join()..
-
-    # TODO: Don't duplicate this code.
-    """Copied from TweetStore: Twython gives us date fields as strings. This function converts date fields we care
-    about (such as "created_at") into proper datetime objects."""
-    def _str_to_date(self, tweet):
-        if _CREATED_AT not in tweet:
-            tweet[_CREATED_AT] = datetime.now()
-            return tweet
-        if type(tweet[_CREATED_AT]) is datetime:
-            return tweet
-        # strptime does not always accept %z for the timezone in 2.7, so we have
-        # to handle it manually. The initial format is: Sun Oct 20 19:48:26 +0000 2013
-        datestr = tweet[_CREATED_AT]
-        dt = datetime.strptime(datestr[0:20] + datestr[26:], "%a %b %d %H:%M:%S %Y")
-        tweet[_CREATED_AT] = dt
-        return tweet
 
     def updateStreamProgress(self):
         self._stream_tweets += 1
