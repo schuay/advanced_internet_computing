@@ -120,17 +120,17 @@ class SearchThread(threading.Thread):
                     result = twitter.search(**search_args)
                     tweets = result["statuses"]
 
+                    # Filter by date.
+                    tweets = map(tweet.to_date, tweets)
+                    tweets = [t for t in tweets if self._search_from <= t[tweet.CREATED_AT]]
+
                     if len(tweets) == 0:
                         break
 
                     for t in tweets:
-                        # check date
-                        tweet.to_date(tweet)
-                        if self._search_from <= tweet[tweet.CREATED_AT]:
-                            self._parent.updateSearchProgress()
-                            store.put([tweet])      # TODO: Don't insert 1-by-1.
-                        else:
-                            return
+                        self._parent.updateSearchProgress()
+
+                    store.put(tweets)
 
                     search_args["max_id"] = min(int(t["id"]) for t in tweets) - 1
                 except TwythonRateLimitError:
