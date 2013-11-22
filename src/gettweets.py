@@ -142,7 +142,7 @@ class SearchThread(threading.Thread):
             store.close()
 
 class Manager():
-    def init(self, credentials, search_kw, search_from, search_to):
+    def __init__(self, credentials, search_kw, search_from, search_to):
         self._search_tweets = 0
         self._stream_tweets = 0
 
@@ -158,6 +158,8 @@ class Manager():
         self._stream_thread = StreamThread(credentials, search_kw, search_to, self)
         self._search_thread = SearchThread(credentials, search_kw, search_from, self)
 
+    def run(self):
+        # TODO: Remove threading.
         self._stream_thread.start()
         self._search_thread.start()
 
@@ -204,5 +206,5 @@ if __name__ == '__main__':
     with open(CREDENTIALS_FILE, 'r') as f:
         credentials = json.loads(f.read())
 
-    manager = Manager()
-    manager.init(credentials, search_kw, search_from, search_to) # TODO: Move args to ctor, run() method
+    manager = Manager(credentials, search_kw, search_from, search_to)
+    manager.run()
