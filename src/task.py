@@ -4,6 +4,7 @@ import tweet
 
 from aggregator import MeanAggregator
 from classifier import Classifier
+from datetime import datetime
 from tweetstore import TweetStore
 
 ID = "id"
@@ -16,6 +17,7 @@ RATING = "rating"
 SAMPLE = "sample"
 
 DBNAME = "tweets"
+SAMPLE_SIZE = 10
 
 """Runs all steps needed to take a task to completion. In particular, these should be:
    retrieval of tweets matching the specified keywords and time range from the twitter API,
@@ -47,15 +49,33 @@ def run(task, classifier, aggregator):
 
     # Classify them.
 
+    rated = []
     for t in tweets:
         s = classifier.classify(t)
         print ("%s -- sentiment: %s" % (t[tweet.TEXT],
             "positive" if (s == 1) else "negative"))
         aggregator.add(t, s)
+        rated.append((t[tweet.TEXT], s))
 
-    # aggregator.get_sentiment()
+    # Sample the most positive and most negative tweets.
+
+    rated.sort(key = lambda t: t[1])
+
+    if len(rated) <= 2 * SAMPLE_SIZE:
+        sample = rated
+    else:
+        sample = rated[:SAMPLE_SIZE] + rated[-SAMPLE_SIZE:]
+    rated = None
+
+    # Fill in task details.
+
+    task[SAMPLE] = sample
+    task[RATING] = aggregator.get_sentiment()
+    task[COMPLETED_AT] = datetime.utcnow()
+
+    print task
+
     # TODO: Store result and intermediate stati in DB.
-    # TODO: Sample some tweets randomly.
 
 def _get_credentials(filename):
     with open(filename, 'r') as f:
