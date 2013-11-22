@@ -38,6 +38,9 @@ class TweetStore:
     """Stores the specified tweets into the database."""
     def put(self, tweets):
         dateified_tweets = map(tweet.to_date, tweets)
+        if len(dateified_tweets) == 0:
+            return
+
         try:
             self._collection.insert(dateified_tweets, continue_on_error = True)
         except DuplicateKeyError:
