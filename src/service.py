@@ -40,6 +40,9 @@ db_collection = db_client[DBNAME].task_collection
 
 db_collection.ensure_index(task.ID)
 
+# TODO: add endpoint for twitter authentication, every client supplies their own twitter account
+# or user pool of twitter accounts
+
 # TODO: Add http status code and internal error code to error headers.
 @app.errorhandler(BAD_REQUEST)
 def bad_request(error):
