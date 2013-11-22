@@ -33,13 +33,13 @@ class MyStreamer(TwythonStreamer):
     def __init__(self, app_key, app_secret, oauth_token, oauth_token_secret, store, parent, search_to):
         super(MyStreamer, self).__init__(app_key, app_secret, oauth_token, oauth_token_secret)
         self._buffer = []
-        self.parent = parent
+        self._parent = parent
         self._store = store
-        self.search_to = search_to
+        self._search_to = search_to
 
     def on_success(self, data):
         self._buffer.append(data)
-        self.parent.updateStreamProgress()
+        self._parent.updateStreamProgress()
 
         if len(self._buffer) > CHUNK_SIZE:
             self.flush()
@@ -50,7 +50,7 @@ class MyStreamer(TwythonStreamer):
 
     def check_tweets(self, tweets):
         map(tweet.to_date, tweets)
-        t = [t for t in tweets if t[tweet.CREATED_AT] <= self.search_to]
+        t = [t for t in tweets if t[tweet.CREATED_AT] <= self._search_to]
         if len(t) > 0:
             self._store.put(t)
         else:
@@ -63,51 +63,51 @@ class MyStreamer(TwythonStreamer):
 class StreamThread(threading.Thread):
     def __init__(self, credentials, search_kw, search_to, parent):
         threading.Thread.__init__(self)
-        self.parent = parent
-        self.credentials = credentials
-        self.search_kw = search_kw
-        self.search_to = search_to
-        self.stream = None
+        self._parent = parent
+        self._credentials = credentials
+        self._search_kw = search_kw
+        self._search_to = search_to
+        self._stream = None
     def exit(self):
-        if self.stream is not None:
-            self.stream.flush()
-            self.stream.disconnect()
+        if self._stream is not None:
+            self._stream.flush()
+            self._stream.disconnect()
     def run(self):
+        store = TweetStore("tweets")
         try:
-            store = TweetStore("tweets")
-            self.stream = MyStreamer(self.credentials['APP_KEY'],
-                                self.credentials['APP_SECRET'],
-                                self.credentials['TOKEN_KEY'],
-                                self.credentials['TOKEN_SECRET'],
+            self._stream = MyStreamer(self._credentials['APP_KEY'],
+                                self._credentials['APP_SECRET'],
+                                self._credentials['TOKEN_KEY'],
+                                self._credentials['TOKEN_SECRET'],
                                 store,
-                                self.parent,
-                                search_to)
-            self.stream.statuses.filter(locations = WORLD,
+                                self._parent,
+                                self._search_to)
+            self._stream.statuses.filter(locations = WORLD,
                                    language = 'en',
-                                   track = self.search_kw)
+                                   track = self._search_kw)
         finally:
             store.close()
 
 class SearchThread(threading.Thread):
     def __init__(self, credentials, search_kw, search_from, parent):
         threading.Thread.__init__(self)
-        self.parent = parent
-        self.credentials = credentials # TODO: private vars with _ prefix
-        self.search_kw = search_kw
-        self.search_from = search_from
-        self.loop = True
+        self._parent = parent
+        self._credentials = credentials
+        self._search_kw = search_kw
+        self._search_from = search_from
+        self._loop = True
 
     def exit(self):
-        self.loop = False
+        self._loop = False
 
     def run(self):
         store = TweetStore("tweets")
         count = sys.maxint
-        twitter = Twython(self.credentials['APP_KEY'],
-                            self.credentials['APP_SECRET'],
-                            self.credentials['TOKEN_KEY'],
-                            self.credentials['TOKEN_SECRET'])
-        search_args = { "q": self.search_kw
+        twitter = Twython(self._credentials['APP_KEY'],
+                            self._credentials['APP_SECRET'],
+                            self._credentials['TOKEN_KEY'],
+                            self._credentials['TOKEN_SECRET'])
+        search_args = { "q": self._search_kw
                       , "until": datetime.now().strftime("%Y-%m-%d")
                       , "lang": 'en'
                       , "result_type": 'recent'
@@ -115,7 +115,7 @@ class SearchThread(threading.Thread):
                       }
 
         retrieved = 0 # TODO: Remove retrieved and count
-        while self.loop:
+        while self._loop:
             # https://dev.twitter.com/docs/api/1.1/get/search/tweets
             try:
                 result = twitter.search(**search_args)
@@ -127,8 +127,8 @@ class SearchThread(threading.Thread):
                 for tweet in tweets:
                     # check date
                     tweet.to_date(tweet)
-                    if self.search_from <= tweet[tweet.CREATED_AT]:
-                        self.parent.updateSearchProgress()
+                    if self._search_from <= tweet[tweet.CREATED_AT]:
+                        self._parent.updateSearchProgress()
                         store.put([tweet])      # TODO: Don't insert 1-by-1.
                     else:
                         retrieved = sys.maxint
@@ -161,11 +161,11 @@ class Manager():
                                         maxval = UnknownLength)
         self._progressbar.start()
 
-        self.stream_thread = StreamThread(credentials, search_kw, search_to, self)
-        self.search_thread = SearchThread(credentials, search_kw, search_from, self)
+        self._stream_thread = StreamThread(credentials, search_kw, search_to, self)
+        self._search_thread = SearchThread(credentials, search_kw, search_from, self)
 
-        self.stream_thread.start()
-        self.search_thread.start()
+        self._stream_thread.start()
+        self._search_thread.start()
 
         while threading.activeCount() > 1:
             time.sleep(0.01)    # Python can't receive signals while blocked in thread.join()..
@@ -183,10 +183,10 @@ class Manager():
 
     def stop(self):
         self._progressbar.finish()
-        if self.search_thread is not None:
-            self.search_thread.exit()
-        if self.stream_thread is not None:
-            self.stream_thread.exit()
+        if self._search_thread is not None:
+            self._search_thread.exit()
+        if self._stream_thread is not None:
+            self._stream_thread.exit()
 
 if __name__ == '__main__':
     search_from = datetime.utcnow()
