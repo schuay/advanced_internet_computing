@@ -14,13 +14,20 @@
 # * Content type negotiation?
 # * Return endpoints on API root? http://blog.luisrei.com/articles/rest.html
 
+import getopt
+import sys
+
 from flask import Flask, abort, json, jsonify, make_response, request, url_for
 from pymongo import MongoClient
 from pymongo.errors import DuplicateKeyError
 
 import datetime
 import uuid
-import Queue
+
+from classifier import Classifier
+from classifier import AllWords
+
+classifier = "classifier.pickle"
 
 CREATED = 201
 BAD_REQUEST = 400
@@ -31,6 +38,9 @@ app = Flask(__name__)
 import task
 
 DBNAME = "tweets"
+
+from Queue import Queue
+from seqworker import SeqWorker
 
 task_queue = Queue()
 
@@ -91,10 +101,28 @@ def api_post_task():
         print ("Duplicate ID %s. WTF?" % new_id)
         raise
 
-    Queue.put(new_task)
+    task_queue.put(new_task)
 
     return jsonify({'id': new_id, 'uri': url_for('api_get_task',
         task_id = new_id, _external = True)}), CREATED
 
+def usage():
+    print("USAGE: %s [-c classifier]" %
+            sys.argv[0])
+
 if __name__ == '__main__':
+    opts, args = getopt.getopt(sys.argv[1:], "hc:")
+    for o, a in opts:
+        if o == "-c":
+            classifier = a
+        else:
+            usage()
+            sys.exit(0)
+
+    classifier = Classifier.load(classifier)
+    worker = SeqWorker(task_queue, DBNAME, classifier);
+    worker.start()
+
     app.run(debug = True)
+
+    worker.join()
