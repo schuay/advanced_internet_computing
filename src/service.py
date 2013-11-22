@@ -15,6 +15,10 @@
 # * Return endpoints on API root? http://blog.luisrei.com/articles/rest.html
 
 from flask import Flask, abort, json, jsonify, make_response, request, url_for
+from pymongo import MongoClient
+from pymongo.errors import DuplicateKeyError
+
+from multiprocessing import Pool
 
 import datetime
 import uuid
@@ -25,17 +29,16 @@ NOT_FOUND = 404
 
 app = Flask(__name__)
 
-TASKS = { 42:
-            { 'id': 42
-            , 'keywords': ['yellow', 'thai', 'panda', 'tea']
-            , 'start': datetime.datetime(2011, 1, 1)
-            , 'end': datetime.datetime(2013, 11, 19)
-            , 'submitted_at': datetime.datetime.now() - datetime.timedelta(5)
-            , 'completed_at': datetime.datetime.now()
-            , 'rating': 0.5
-            , 'sample': [('tweet1', 0.5), ('ANGRY', 0.1), ('happyyyyy', 0.9)]
-            }
-        }
+import task
+
+DBNAME = "tweets"
+
+thread_pool = Pool(processes=10)
+
+db_client = MongoClient()
+db_collection = db_client[DBNAME].task_collection
+
+db_collection.ensure_index(task.ID)
 
 # TODO: Add http status code and internal error code to error headers.
 @app.errorhandler(BAD_REQUEST)
@@ -50,12 +53,15 @@ def not_found(error):
 # curl localhost:5000/api/tasks/42
 @app.route('/api/tasks/<string:task_id>', methods = ['GET'])
 def api_get_task(task_id):
-    if task_id not in TASKS:
+    t = db_collection.find_one({ task.ID: task_id });
+    if not t:
         abort(NOT_FOUND)
-    return jsonify({'tasks': TASKS[task_id]})
+    t.pop('_id')
+    return jsonify({'tasks': t})
 
 @app.route('/api/tasks/<string:task_id>', methods = ['DELETE'])
 def api_del_task(task_id):
+    db_collection.remove({ task.ID: task_id });
     return "DEL %s" % task_id
 
 # TODO: Change to noun endpoint name.
@@ -76,10 +82,18 @@ def api_post_task():
                , 'start': request.json['start']
                , 'end': request.json['end']
                }
-    TASKS[new_id] = new_task
+
+    try:
+        db_collection.insert(new_task)
+    except DuplicateKeyError:
+        print ("Duplicate ID %s. WTF?" % new_id)
+        raise
 
     return jsonify({'id': new_id, 'uri': url_for('api_get_task',
         task_id = new_id, _external = True)}), CREATED
 
 if __name__ == '__main__':
     app.run(debug = True)
+    
+    thread_pool.close()
+    thread_pool.join()
