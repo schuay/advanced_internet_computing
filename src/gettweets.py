@@ -62,8 +62,8 @@ class MyStreamer(TwythonStreamer):
 
 class StreamThread(threading.Thread):
     def __init__(self, credentials, search_kw, search_to, parent):
-        self.parent = parent
         threading.Thread.__init__(self)
+        self.parent = parent
         self.credentials = credentials
         self.search_kw = search_kw
         self.search_to = search_to
@@ -90,9 +90,9 @@ class StreamThread(threading.Thread):
 
 class SearchThread(threading.Thread):
     def __init__(self, credentials, search_kw, search_from, parent):
-        self.parent = parent
         threading.Thread.__init__(self)
-        self.credentials = credentials
+        self.parent = parent
+        self.credentials = credentials # TODO: private vars with _ prefix
         self.search_kw = search_kw
         self.search_from = search_from
         self.loop = True
@@ -114,8 +114,8 @@ class SearchThread(threading.Thread):
                       , "count": 100
                       }
 
-        retrieved = 0
-        while self.loop is True:
+        retrieved = 0 # TODO: Remove retrieved and count
+        while self.loop:
             # https://dev.twitter.com/docs/api/1.1/get/search/tweets
             try:
                 result = twitter.search(**search_args)
@@ -129,7 +129,7 @@ class SearchThread(threading.Thread):
                     self.parent._str_to_date(tweet)
                     if self.search_from <= tweet[_CREATED_AT]:
                         self.parent.updateSearchProgress()
-                        store.put([tweet])
+                        store.put([tweet])      # TODO: Don't insert 1-by-1.
                     else:
                         retrieved = sys.maxint
                         break
@@ -140,11 +140,12 @@ class SearchThread(threading.Thread):
 
                 search_args["max_id"] = min(int(t["id"]) for t in tweets) - 1
             except TwythonRateLimitError:
+                print "Rate limit reached, sleeping for %d seconds..." % TIMEOUT
                 time.sleep(TIMEOUT)
             except TwythonError:
                 break
 
-        store.close()
+        store.close() # TODO: finally: 
 
 class Manager():
     def init(self, credentials, search_kw, search_from, search_to):
@@ -167,12 +168,9 @@ class Manager():
         self.search_thread.start()
 
         while threading.activeCount() > 1:
-            pass
-        
-        # prevent "ugly" output in case of an interuption
-        time.sleep(2)
-        print ""
+            time.sleep(0.01)    # Python can't receive signals while blocked in thread.join()..
 
+    # TODO: Don't duplicate this code.
     """Copied from TweetStore: Twython gives us date fields as strings. This function converts date fields we care
     about (such as "created_at") into proper datetime objects."""
     def _str_to_date(self, tweet):
@@ -229,4 +227,4 @@ if __name__ == '__main__':
         credentials = json.loads(f.read())
 
     manager = Manager()
-    manager.init(credentials, search_kw, search_from, search_to)
+    manager.init(credentials, search_kw, search_from, search_to) # TODO: Move args to ctor, run() method
