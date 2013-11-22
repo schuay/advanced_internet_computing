@@ -18,10 +18,9 @@ from flask import Flask, abort, json, jsonify, make_response, request, url_for
 from pymongo import MongoClient
 from pymongo.errors import DuplicateKeyError
 
-from multiprocessing import Pool
-
 import datetime
 import uuid
+import Queue
 
 CREATED = 201
 BAD_REQUEST = 400
@@ -33,7 +32,7 @@ import task
 
 DBNAME = "tweets"
 
-thread_pool = Pool(processes=10)
+task_queue = Queue()
 
 db_client = MongoClient()
 db_collection = db_client[DBNAME].task_collection
@@ -92,11 +91,10 @@ def api_post_task():
         print ("Duplicate ID %s. WTF?" % new_id)
         raise
 
+    Queue.put(new_task)
+
     return jsonify({'id': new_id, 'uri': url_for('api_get_task',
         task_id = new_id, _external = True)}), CREATED
 
 if __name__ == '__main__':
     app.run(debug = True)
-    
-    thread_pool.close()
-    thread_pool.join()
