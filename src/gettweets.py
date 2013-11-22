@@ -4,8 +4,6 @@ import getopt
 import json
 import signal
 import sys
-import thread
-import threading
 import time
 import tweet
 
@@ -60,9 +58,8 @@ class MyStreamer(TwythonStreamer):
         self.check_tweets(self._buffer)
         del self._buffer[:]
 
-class StreamThread(threading.Thread):
+class StreamThread:
     def __init__(self, credentials, search_kw, search_to, parent):
-        threading.Thread.__init__(self)
         self._parent = parent
         self._credentials = credentials
         self._search_kw = search_kw
@@ -88,20 +85,38 @@ class StreamThread(threading.Thread):
         finally:
             store.close()
 
-class SearchThread(threading.Thread):
-    def __init__(self, credentials, search_kw, search_from, parent):
-        threading.Thread.__init__(self)
-        self._parent = parent
+class TweetFetcher():
+    def __init__(self, credentials, search_kw, search_from, search_to):
+        self._buffer = []
         self._credentials = credentials
-        self._search_kw = search_kw
-        self._search_from = search_from
         self._loop = True
+        self._retrieved = 0
+        self._search_from = search_from
+        self._search_kw = search_kw
+        self._search_to = search_to
+        self._store = None
+        self._stream = None
 
-    def exit(self):
-        self._loop = False
+        self._progressbar = ProgressBar(widgets = [ AnimatedMarker()
+                                                  , ' '
+                                                  , Timer()
+                                                  , ', # of Tweets: '
+                                                  , Counter()
+                                                  ],
+                                        maxval = UnknownLength)
+        self._progressbar.start()
 
     def run(self):
-        store = TweetStore("tweets")
+        try:
+            self._store = TweetStore("tweets")
+            self._fetch_tweets()
+            self._fetch_stream_tweets()
+        finally:
+            if self._store is not None:
+                self._store.close()
+            self._progressbar.finish()
+
+    def _fetch_tweets(self):
         twitter = Twython(self._credentials['APP_KEY'],
                             self._credentials['APP_SECRET'],
                             self._credentials['TOKEN_KEY'],
@@ -113,76 +128,39 @@ class SearchThread(threading.Thread):
                       , "count": 100
                       }
 
-        try:
-            while self._loop:
-                # https://dev.twitter.com/docs/api/1.1/get/search/tweets
-                try:
-                    result = twitter.search(**search_args)
-                    tweets = result["statuses"]
+        while self._loop:
+            # https://dev.twitter.com/docs/api/1.1/get/search/tweets
+            try:
+                result = twitter.search(**search_args)
+                tweets = result["statuses"]
 
-                    # Filter by date.
-                    tweets = map(tweet.to_date, tweets)
-                    tweets = [t for t in tweets if self._search_from <= t[tweet.CREATED_AT]]
+                # Filter by date.
+                tweets = map(tweet.to_date, tweets)
+                tweets = [t for t in tweets if self._search_from <= t[tweet.CREATED_AT]]
 
-                    if len(tweets) == 0:
-                        break
-
-                    for t in tweets:
-                        self._parent.updateSearchProgress()
-
-                    store.put(tweets)
-
-                    search_args["max_id"] = min(int(t["id"]) for t in tweets) - 1
-                except TwythonRateLimitError:
-                    print "Rate limit reached, sleeping for %d seconds..." % TIMEOUT
-                    time.sleep(TIMEOUT)
-                except TwythonError:
+                if len(tweets) == 0:
                     break
-        finally:
-            store.close()
 
-class Manager():
-    def __init__(self, credentials, search_kw, search_from, search_to):
-        self._search_tweets = 0
-        self._stream_tweets = 0
+                self._store.put(tweets)
+                self.update(len(tweets))
 
-        self._progressbar = ProgressBar(widgets = [ AnimatedMarker()
-                                                  , ' '
-                                                  , Timer()
-                                                  , ', # of Tweets: '
-                                                  , Counter()
-                                                  ],
-                                        maxval = UnknownLength)
-        self._progressbar.start()
+                search_args["max_id"] = min(int(t["id"]) for t in tweets) - 1
+            except TwythonRateLimitError:
+                print "Rate limit reached, sleeping for %d seconds..." % TIMEOUT
+                time.sleep(TIMEOUT)
+            except TwythonError:
+                break
 
-        self._stream_thread = StreamThread(credentials, search_kw, search_to, self)
-        self._search_thread = SearchThread(credentials, search_kw, search_from, self)
+    def _fetch_stream_tweets(self):
+        pass
 
-    def run(self):
-        # TODO: Remove threading.
-        self._stream_thread.start()
-        self._search_thread.start()
-
-        while threading.activeCount() > 1:
-            time.sleep(0.01)    # Python can't receive signals while blocked in thread.join()..
-
-    def updateStreamProgress(self):
-        self._stream_tweets += 1
-        self.update()
-
-    def updateSearchProgress(self):
-        self._search_tweets += 1
-        self.update()
-
-    def update(self):
-        self._progressbar.update((self._search_tweets + self._stream_tweets))
+    def update(self, count):
+        self._retrieved += count
+        self._progressbar.update(self._retrieved)
 
     def stop(self):
-        self._progressbar.finish()
-        if self._search_thread is not None:
-            self._search_thread.exit()
-        if self._stream_thread is not None:
-            self._stream_thread.exit()
+        self._store.put(self._buffer)
+        self._loop = False
 
 if __name__ == '__main__':
     search_from = datetime.utcnow()
@@ -206,5 +184,5 @@ if __name__ == '__main__':
     with open(CREDENTIALS_FILE, 'r') as f:
         credentials = json.loads(f.read())
 
-    manager = Manager(credentials, search_kw, search_from, search_to)
-    manager.run()
+    fetcher = TweetFetcher(credentials, search_kw, search_from, search_to)
+    fetcher.run()
