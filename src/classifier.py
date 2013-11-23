@@ -1,7 +1,7 @@
 #!/bin/python2
 
 import math
-import pickle
+import cPickle as pickle
 import re
 
 import tweet
