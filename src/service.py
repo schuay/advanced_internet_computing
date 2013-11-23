@@ -90,10 +90,14 @@ def api_post_task():
         abort(BAD_REQUEST)
 
     new_id = str(uuid.uuid4())
-    new_task = { 'id': new_id
-               , 'keywords': request.json['keywords']
-               , 'start': start
-               , 'end': end
+    new_task = { task.ID: new_id
+               , task.KEYWORDS: request.json['keywords']
+               , task.START: start
+               , task.END: end
+               , task.SUBMITTED_AT: datetime.datetime.utcnow()
+               , task.COMPLETED_AT: None
+               , task.RATING: None
+               , task.SAMPLE: []
                }
 
     try:
