@@ -132,15 +132,16 @@ import getopt
 import nltk
 import sys
 
-def evaluate_features(positive, negative, load, save):
+def evaluate_features(positive, negative, load, save, cutoff):
     with open(positive, 'r') as f:
         posTweets = re.split(r'\n', f.read())
     with open(negative, 'r') as f:
         negTweets = re.split(r'\n', f.read())
  
-    #selects 3/4 of the features to be used for training and 1/4 to be used for testing
-    posCutoff = int(math.floor(len(posTweets)*3/4))
-    negCutoff = int(math.floor(len(negTweets)*3/4))
+    #selects cutoff of the features to be used for training and (1 - cutoff)
+    # to be used for testing
+    posCutoff = int(math.floor(len(posTweets)*cutoff))
+    negCutoff = int(math.floor(len(negTweets)*cutoff))
 
     if load:
         print 'loading classifier \'%s\'' % load
@@ -170,7 +171,7 @@ def evaluate_features(positive, negative, load, save):
     classifier.evaluate(trainSets)
 
 def usage():
-    print("USAGE: %s [-p positive_tweets] [-n negative_tweets] [-s classifier] [-l classifier]" %
+    print("USAGE: %s [-p positive_tweets] [-n negative_tweets] [-s classifier] [-l classifier] [k training cutoff]" %
             sys.argv[0])
 
 if __name__ == '__main__':
@@ -180,7 +181,9 @@ if __name__ == '__main__':
     positive_file = 'sentiment.pos'
     negative_file = 'sentiment.neg'
 
-    opts, args = getopt.getopt(sys.argv[1:], "hs:l:p:n:")
+    cutoff = 0.75
+
+    opts, args = getopt.getopt(sys.argv[1:], "hc:s:l:p:n:")
     for o, a in opts:
         if o == "-s":
             classifier_save = a
@@ -190,6 +193,8 @@ if __name__ == '__main__':
             positive_file = a
         elif o == "-n":
             negative_file = a
+        elif o == "-c":
+            cutoff = float(a)
         else:
             usage()
             sys.exit(0)
@@ -197,4 +202,5 @@ if __name__ == '__main__':
     evaluate_features(positive_file,
                       negative_file,
                       classifier_load,
-                      classifier_save)
+                      classifier_save,
+                      cutoff)
