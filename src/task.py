@@ -42,39 +42,39 @@ def run(task, db_name, classifier, aggregator):
         tweets = store.get(task[KEYWORDS],
                            task[START],
                            task[END])
+
+        # Classify them.
+
+        rated = []
+        for t in tweets:
+            s = classifier.classify(t)
+            print ("%s -- sentiment: %s" % (t[tweet.TEXT],
+                "positive" if (s == 1) else "negative"))
+            aggregator.add(t, s)
+            rated.append((t[tweet.TEXT], s))
+
+        # Sample the most positive and most negative tweets.
+
+        rated.sort(key = lambda t: t[1])
+
+        if len(rated) <= 2 * SAMPLE_SIZE:
+            sample = rated
+        else:
+            sample = rated[:SAMPLE_SIZE] + rated[-SAMPLE_SIZE:]
+        rated = None
+
+        # Fill in task details.
+
+        task[SAMPLE] = sample
+        task[RATING] = aggregator.get_sentiment()
+        task[COMPLETED_AT] = datetime.utcnow()
+
+        print task
+        store.task_put(task)
+
     finally:
         store.close()
         store = None
-
-    # Classify them.
-
-    rated = []
-    for t in tweets:
-        s = classifier.classify(t)
-        print ("%s -- sentiment: %s" % (t[tweet.TEXT],
-            "positive" if (s == 1) else "negative"))
-        aggregator.add(t, s)
-        rated.append((t[tweet.TEXT], s))
-
-    # Sample the most positive and most negative tweets.
-
-    rated.sort(key = lambda t: t[1])
-
-    if len(rated) <= 2 * SAMPLE_SIZE:
-        sample = rated
-    else:
-        sample = rated[:SAMPLE_SIZE] + rated[-SAMPLE_SIZE:]
-    rated = None
-
-    # Fill in task details.
-
-    task[SAMPLE] = sample
-    task[RATING] = aggregator.get_sentiment()
-    task[COMPLETED_AT] = datetime.utcnow()
-
-    print task
-
-    # TODO: Store result and intermediate stati in DB.
 
 def _get_credentials(filename):
     with open(filename, 'r') as f:
