@@ -1,4 +1,4 @@
-#!/bin/python2
+#!/usr/bin/env python2
 # Imports the tweet database as provided by AIC into our data store.
 
 from datetime import datetime

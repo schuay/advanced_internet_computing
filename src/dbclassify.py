@@ -1,4 +1,4 @@
-#!/bin/python2
+#!/usr/bin/env python2
 
 from classifier import Classifier
 from classifier import AllWords
