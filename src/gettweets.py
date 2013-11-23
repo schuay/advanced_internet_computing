@@ -152,16 +152,16 @@ if __name__ == '__main__':
     search_to = datetime.utcnow() + timedelta(days = 1)
     search_kw = "The Beatles" # TODO: Allow multiple keywords
 
-    opts, args = getopt.getopt(sys.argv[1:], "q:f:t:h")
+    opts, args = getopt.getopt(sys.argv[1:], "k:s:e:h")
     for o, a in opts:
-        if o == "-f":
+        if o == "-s":
             search_from = datetime.strptime(a, "%Y-%m-%d")
-        elif o == "-t":
+        elif o == "-e":
             search_to = datetime.strptime(a, "%Y-%m-%d")
-        elif o == "-q":
+        elif o == "-k":
             search_kw = a
         else:
-            print("USAGE: %s [-q query] [-f from_date] [-t to_date]" % sys.argv[0])
+            print("USAGE: %s [-k keywords] [-s from_date] [-e to_date]" % sys.argv[0])
             sys.exit(1)
 
     print "Retrieving matches for '%s' from %s to %s" % (search_kw, str(search_from), str(search_to))
