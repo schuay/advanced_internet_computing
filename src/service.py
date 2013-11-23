@@ -14,18 +14,18 @@
 # * Content type negotiation?
 # * Return endpoints on API root? http://blog.luisrei.com/articles/rest.html
 
+import datetime
 import getopt
 import sys
-
-from flask import Flask, abort, json, jsonify, make_response, request, url_for
-from pymongo import MongoClient
-from pymongo.errors import DuplicateKeyError
-
-import datetime
+import task
 import uuid
 
-from classifier import Classifier
+from Queue import Queue
 from classifier import AllWords
+from classifier import Classifier
+from flask import Flask, abort, json, jsonify, make_response, request, url_for
+from seqworker import SeqWorker
+from tweetstore import TweetStore
 
 classifier = "classifier.pickle"
 
@@ -34,8 +34,6 @@ BAD_REQUEST = 400
 NOT_FOUND = 404
 
 app = Flask(__name__)
-
-import task
 
 DBNAME = "tweets"
 
