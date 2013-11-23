@@ -31,5 +31,5 @@ class SeqWorker(Thread):
                 except Queue.Empty:
                     pass
 
-            task.run(t, self.__classifier, MeanAggregator())
+            task.run(t, self.__db_name, self.__classifier, MeanAggregator())
             q.task_done()
