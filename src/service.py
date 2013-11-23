@@ -76,7 +76,6 @@ def api_del_task(task_id):
     db_collection.remove({ task.ID: task_id });
     return "DEL %s" % task_id
 
-# TODO: Change to noun endpoint name.
 # Takes a JSON data object with required fields [keywords, start, end].
 # Returns 400 on error, 201 on success.
 # curl -i -H "Content-Type: application/json" -X POST -d '{"start":"20110101", "end":"20130101", "keywords":["secret","monkey","beezkneez"]}' 'localhost:5000/api/submit'
@@ -86,13 +85,17 @@ def api_post_task():
             'start' in request.json and 'end' in request.json):
         abort(BAD_REQUEST)
 
-    # TODO: Error handling.
+    try:
+        start = datetime.datetime.strptime(request.json['start'], "%Y%m%d")
+        end   = datetime.datetime.strptime(request.json['end'],   "%Y%m%d")
+    except ValueError:
+        abort(BAD_REQUEST)
 
     new_id = str(uuid.uuid4())
     new_task = { 'id': new_id
                , 'keywords': request.json['keywords']
-               , 'start': request.json['start']
-               , 'end': request.json['end']
+               , 'start': start
+               , 'end': end
                }
 
     try:
