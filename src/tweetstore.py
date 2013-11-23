@@ -19,9 +19,7 @@ class TweetStore:
 
         self._collection.ensure_index(tweet.CREATED_AT)
         self._collection.ensure_index(tweet.ID, unique = True, drop_dups = True)
-        # self._collection.ensure_index([(tweet.TEXT, "text")]) Requires enabled text search on server
-
-# TODO: Ensure tweets are unique (skip all retweets)
+        self._collection.ensure_index(tweet.TEXT, unique = True, drop_dups = True)
 
     """Retrieves a list of tweets in twython's format from the database.
     Tweets are filtered by the specified keywords and time range.
@@ -29,13 +27,17 @@ class TweetStore:
     start and end are datetime objects."""
     def get(self, keywords, start, end):
         c = self._collection
-        return list(c.find(
+        cursor = c.find(
                 { tweet.TEXT: {"$regex": "^.*(" + "|".join(keywords) + ").*$", "$options": "-i"}
                 , tweet.CREATED_AT:
                     { "$gte": start
                     , "$lte": end
                     }
-                }))
+                })
+        # FIXME: Use twitter's include_retweets parameter instead of this filter and the
+        # unique TEXT index.
+        tweets = filter(lambda t: not t[tweet.TEXT].startswith("RT "), cursor)
+        return tweets
 
     """Stores the specified tweets into the database."""
     def put(self, tweets):
