@@ -6,6 +6,9 @@ from datetime import datetime
 from pymongo import MongoClient
 from pymongo.errors import DuplicateKeyError
 
+TWEET_COLLECTION = "test_tweet_coll"
+TASK_COLLECTION  = "task_tweet_coll"
+
 """A (somewhat) generic store for tweets which can be queried by
 key words and time ranges, and filled with a list of tweets."""
 class TweetStore:
@@ -15,18 +18,18 @@ class TweetStore:
         self._dbname = dbname
 
         self._client = MongoClient()
-        self._collection = self._client[dbname].test_collection
 
-        self._collection.ensure_index(tweet.CREATED_AT)
-        self._collection.ensure_index(tweet.ID, unique = True, drop_dups = True)
-        self._collection.ensure_index(tweet.TEXT, unique = True, drop_dups = True)
+        self._tweet_coll = self._client[dbname][TWEET_COLLECTION]
+        self._tweet_coll.ensure_index(tweet.CREATED_AT)
+        self._tweet_coll.ensure_index(tweet.ID, unique = True, drop_dups = True)
+        self._tweet_coll.ensure_index(tweet.TEXT, unique = True, drop_dups = True)
 
     """Retrieves a list of tweets in twython's format from the database.
     Tweets are filtered by the specified keywords and time range.
     keywords is a list of strings.
     start and end are datetime objects."""
     def get(self, keywords, start, end):
-        c = self._collection
+        c = self._tweet_coll
         cursor = c.find(
                 { tweet.TEXT: {"$regex": "^.*(" + "|".join(keywords) + ").*$", "$options": "-i"}
                 , tweet.CREATED_AT:
@@ -46,7 +49,7 @@ class TweetStore:
             return
 
         try:
-            self._collection.insert(dateified_tweets, continue_on_error = True)
+            self._tweet_coll.insert(dateified_tweets, continue_on_error = True)
         except DuplicateKeyError:
             pass # Ignored.
 
