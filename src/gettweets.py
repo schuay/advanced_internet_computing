@@ -127,6 +127,9 @@ class TweetFetcher():
                 break
 
     def _fetch_stream_tweets(self):
+        if self._search_to < datetime.utcnow():
+            return
+
         self._stream = MyStreamer(self._credentials['APP_KEY'],
                             self._credentials['APP_SECRET'],
                             self._credentials['TOKEN_KEY'],
