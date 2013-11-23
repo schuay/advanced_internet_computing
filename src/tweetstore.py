@@ -7,7 +7,7 @@ from datetime import datetime
 from pymongo import MongoClient
 from pymongo.errors import DuplicateKeyError
 
-TWEET_COLLECTION = "test_tweet_coll"
+TWEET_COLLECTION = "test_collection"
 TASK_COLLECTION  = "task_tweet_coll"
 
 """A (somewhat) generic store for tweets which can be queried by
