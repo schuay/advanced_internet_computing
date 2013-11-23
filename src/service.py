@@ -33,19 +33,11 @@ CREATED = 201
 BAD_REQUEST = 400
 NOT_FOUND = 404
 
-app = Flask(__name__)
-
 DBNAME = "tweets"
 
-from Queue import Queue
-from seqworker import SeqWorker
-
+app = Flask(__name__)
 task_queue = Queue()
-
-db_client = MongoClient()
-db_collection = db_client[DBNAME].task_collection
-
-db_collection.ensure_index(task.ID)
+store = TweetStore(DBNAME)
 
 # TODO: add endpoint for twitter authentication, every client supplies their own twitter account
 # or user pool of twitter accounts
@@ -63,16 +55,15 @@ def not_found(error):
 # curl localhost:5000/api/tasks/42
 @app.route('/api/tasks/<string:task_id>', methods = ['GET'])
 def api_get_task(task_id):
-    t = db_collection.find_one({ task.ID: task_id });
+    t = store.task_get(task_id)
     if not t:
         abort(NOT_FOUND)
-    t.pop('_id')
     return jsonify({'tasks': t})
 
 @app.route('/api/tasks/<string:task_id>', methods = ['DELETE'])
 def api_del_task(task_id):
-    db_collection.remove({ task.ID: task_id });
-    return "DEL %s" % task_id
+    store.task_rm(task_id)
+    return jsonify({'id': task_id})
 
 # Takes a JSON data object with required fields [keywords, start, end].
 # Returns 400 on error, 201 on success.
@@ -101,7 +92,7 @@ def api_post_task():
                }
 
     try:
-        db_collection.insert(new_task)
+        store.task_put(new_task)
     except DuplicateKeyError:
         print ("Duplicate ID %s. WTF?" % new_id)
         raise

@@ -1,5 +1,6 @@
 #!/bin/python2
 
+import task
 import tweet
 
 from datetime import datetime
@@ -23,6 +24,9 @@ class TweetStore:
         self._tweet_coll.ensure_index(tweet.CREATED_AT)
         self._tweet_coll.ensure_index(tweet.ID, unique = True, drop_dups = True)
         self._tweet_coll.ensure_index(tweet.TEXT, unique = True, drop_dups = True)
+
+        self._task_coll = self._client[dbname][TASK_COLLECTION]
+        self._task_coll.ensure_index(task.ID, unique = True, drop_dups = True)
 
     """Retrieves a list of tweets in twython's format from the database.
     Tweets are filtered by the specified keywords and time range.
@@ -54,15 +58,24 @@ class TweetStore:
             pass # Ignored.
 
 # TODO: Rename module since it's not only about tweets.
-# TODO: Add tweet_ prefix to get/put. Implement task fn's.
+# TODO: Add tweet_ prefix to get/put.
 
     """Retrieves a task by id, or returns None if not found."""
     def task_get(self, task_id):
-        pass # TODO
+        t = self._task_coll.find_one({ task.ID: task_id });
+        if t is not None:
+            t.pop('_id')
+        return t
+
+    """Deletes a task by id if it exists."""
+    def task_rm(self, task_id):
+        self._task_coll.remove({ task.ID: task_id });
 
     """Upserts the passed task."""
-    def task_put(self, task):
-        pass # TODO
+    def task_put(self, t):
+        self._task_coll.update({task.ID: t[task.ID]},
+                               {"$set": t},
+                               upsert = True)
 
     """Performs final cleanups such as closing the DB connection."""
     def close(self):
