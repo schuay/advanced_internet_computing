@@ -119,10 +119,15 @@ if __name__ == '__main__':
             usage()
             sys.exit(0)
 
+    print "Loading classifier..."
     classifier = Classifier.load(classifier)
+
     worker = SeqWorker(task_queue, DBNAME, classifier);
     worker.start()
 
-    app.run(debug = True)
+    # debug = True requires at least double the memory, and classifiers are huge :(.
+    app.run(debug = False)
 
-    worker.join()
+    # Does python threading really suck this much?
+    print "App terminated"
+    worker.keep_working = False
