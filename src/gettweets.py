@@ -153,10 +153,15 @@ class TweetFetcher():
             self._stream.flush()
             self._stream.disconnect()
 
+# TODO: Allow multiple keywords. Ensure handling of multiple kw's is identical
+# for both fetching from twitter and loading from the DB. Currently,
+# the DB seems to OR keywords, while fetching from twitter only accepts a single
+# keyword.
+
 if __name__ == '__main__':
     search_from = datetime.utcnow()
     search_to = datetime.utcnow() + timedelta(days = 1)
-    search_kw = "The Beatles" # TODO: Allow multiple keywords
+    search_kw = "The Beatles"
 
     opts, args = getopt.getopt(sys.argv[1:], "k:s:e:h")
     for o, a in opts:
