@@ -5,11 +5,13 @@ import cPickle as pickle
 import re
 
 import tweet
+from nltk.corpus import stopwords
 
 from nltk.classify import NaiveBayesClassifier, apply_features
 
 NEG = 0
 POS = 1
+stopset = set(stopwords.words('english'))
 
 class FeatureSelectionI:
     def select_features(self, obj):
@@ -25,14 +27,32 @@ class AllWords(FeatureSelectionI):
     @staticmethod
     def __get_string_features(string):
         words = re.findall(r"[\w']+|[.,!?;]", string)
-        return dict([(word, True) for word in words])
+        return dict([(word.lower(), True) for word in words])
 
     def select_features(self, obj):
         try:
             return AllWords.__get_tweet_features(obj)
         except:
             return AllWords.__get_string_features(obj)
+			
+class StopWordFilter(FeatureSelectionI):
+    @staticmethod
+    def __get_tweet_features(t):
+        return StopWordFilter.__get_string_features(t[tweet.TEXT])
 
+    """Breaks up text into list of words. Takes a string and returns a dictionary mapping
+    word keys to True values."""
+    @staticmethod
+    def __get_string_features(string):
+        words = re.findall(r"[\w']+|[.,!?;]", string)
+        return dict([(word.lower(), True) for word in words if word.lower() not in stopset])
+
+    def select_features(self, obj):
+        try:
+            return StopWordFilter.__get_tweet_features(obj)
+        except:
+            return StopWordFilter.__get_string_features(obj)
+			
 class AllHashtags(FeatureSelectionI):
     @staticmethod
     def __get_tweet_features(t):
@@ -119,6 +139,8 @@ class Classifier:
         print 'pos recall:', nltk.metrics.recall(referenceSets[POS], testSets[POS])
         print 'neg precision:', nltk.metrics.precision(referenceSets[NEG], testSets[NEG])
         print 'neg recall:', nltk.metrics.recall(referenceSets[NEG], testSets[NEG])
+        print self.__nltk_classifier.show_most_informative_features(10)
+
 
     def classify(self, obj):
         features = self.__fs.select_features(obj)
@@ -132,7 +154,7 @@ import getopt
 import nltk
 import sys
 
-def evaluate_features(positive, negative, load, save, cutoff):
+def evaluate_features(positive, negative, load, save, cutoff, stopWordFilter):
     with open(positive, 'r') as f:
         posTweets = re.split(r'\n', f.read())
     with open(negative, 'r') as f:
@@ -153,8 +175,11 @@ def evaluate_features(positive, negative, load, save, cutoff):
         trainSets = [list() for x in [POS, NEG]]
         trainSets[POS] = posTweets[:posCutoff]
         trainSets[NEG] = negTweets[:negCutoff]
-
-        classifier = Classifier.train(trainSets, AllWords());
+        if stopWordFilter:
+            print 'stop words filter'
+            classifier = Classifier.train(trainSets, StopWordFilter()); 		
+        else:
+		    classifier = Classifier.train(trainSets, AllWords());
 
         trainSets = None
 
@@ -170,6 +195,7 @@ def evaluate_features(positive, negative, load, save, cutoff):
     trainSets[NEG] = negTweets[negCutoff:]
     classifier.evaluate(trainSets)
 
+
 def usage():
     print("USAGE: %s [-p positive_tweets] [-n negative_tweets] [-s classifier] [-l classifier] [k training cutoff]" %
             sys.argv[0])
@@ -180,10 +206,10 @@ if __name__ == '__main__':
 
     positive_file = 'sentiment.pos'
     negative_file = 'sentiment.neg'
-
+    stopWordFilter = False
     cutoff = 0.75
 
-    opts, args = getopt.getopt(sys.argv[1:], "hc:s:l:p:n:")
+    opts, args = getopt.getopt(sys.argv[1:], "hc:s:l:p:n:c:w:")
     for o, a in opts:
         if o == "-s":
             classifier_save = a
@@ -195,6 +221,8 @@ if __name__ == '__main__':
             negative_file = a
         elif o == "-c":
             cutoff = float(a)
+        elif o == "-w":
+            stopWordFilter = a
         else:
             usage()
             sys.exit(0)
@@ -203,4 +231,5 @@ if __name__ == '__main__':
                       negative_file,
                       classifier_load,
                       classifier_save,
-                      cutoff)
+                      cutoff,
+                      stopWordFilter)
