@@ -36,23 +36,13 @@ class AllWords(FeatureSelectionI):
             return AllWords.__get_string_features(obj)
 			
 class StopWordFilter(FeatureSelectionI):
-    @staticmethod
-    def __get_tweet_features(t):
-        return StopWordFilter.__get_string_features(t[tweet.TEXT])
-
-    """Breaks up text into list of words. Takes a string and returns a dictionary mapping
-    word keys to True values."""
-    @staticmethod
-    def __get_string_features(string):
-        words = re.findall(r"[\w']+|[.,!?;]", string)
-        return dict([(word.lower(), True) for word in words if word.lower() not in stopset])
+    def __init__(self, selection):
+        self.__selection = selection
 
     def select_features(self, obj):
-        try:
-            return StopWordFilter.__get_tweet_features(obj)
-        except:
-            return StopWordFilter.__get_string_features(obj)
-			
+        fs = self.__selection.select_features(obj);
+        return {f: m for f, m in fs.iteritems() if (isinstance(f, basestring) and f.lower() not in stopset)}
+
 class AllHashtags(FeatureSelectionI):
     @staticmethod
     def __get_tweet_features(t):
@@ -175,11 +165,13 @@ def evaluate_features(positive, negative, load, save, cutoff, stopWordFilter):
         trainSets = [list() for x in [POS, NEG]]
         trainSets[POS] = posTweets[:posCutoff]
         trainSets[NEG] = negTweets[:negCutoff]
+
+        featureSelection = AllWords()
         if stopWordFilter:
-            print 'stop words filter'
-            classifier = Classifier.train(trainSets, StopWordFilter()); 		
-        else:
-		    classifier = Classifier.train(trainSets, AllWords());
+            print 'using stop words filter'
+            featureSelection = StopWordFilter(featureSelection)
+
+        classifier = Classifier.train(trainSets, featureSelection);
 
         trainSets = None
 
