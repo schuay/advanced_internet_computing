@@ -9,7 +9,7 @@ import tweet
 
 from datetime import datetime, timedelta
 from progressbar import ProgressBar, AnimatedMarker, Timer, Counter, UnknownLength
-from tweetstore import TweetStore
+import tweetstore
 from twython import Twython
 from twython import TwythonStreamer
 from twython import TwythonRateLimitError, TwythonError
@@ -79,7 +79,7 @@ class TweetFetcher():
 
     def run(self):
         try:
-            self._store = TweetStore("tweets")
+            self._store = tweetstore.TweetStore("tweets")
             self._fetch_tweets()
 
             if not self._loop:

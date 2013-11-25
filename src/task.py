@@ -5,7 +5,7 @@ import tweet
 from aggregator import MeanAggregator
 from classifier import Classifier
 from datetime import datetime
-from tweetstore import TweetStore
+import tweetstore
 
 ID = "id"
 KEYWORDS = "keywords"
@@ -37,7 +37,7 @@ def run(task, db_name, classifier, aggregator):
 
     # Retrieve tweets from db.
 
-    store = TweetStore(db_name)
+    store = tweetstore.TweetStore(db_name)
     try:
         tweets = store.get(task[KEYWORDS],
                            task[START],
