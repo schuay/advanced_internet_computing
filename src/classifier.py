@@ -7,7 +7,8 @@ import re
 import tweet
 from nltk.corpus import stopwords
 
-from nltk.classify import NaiveBayesClassifier, apply_features
+from nltk.classify import NaiveBayesClassifier
+from nltk.classify.util import apply_features
 
 NEG = 0
 POS = 1
