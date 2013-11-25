@@ -120,6 +120,8 @@ class TweetFetcher():
                 self.update(len(tweets))
 
                 search_args["max_id"] = min(int(t["id"]) for t in tweets) - 1
+            except ConnectionError:
+                pass # TODO: investigate why this happens
             except TwythonRateLimitError:
                 print "Rate limit reached, sleeping for %d seconds..." % TIMEOUT
                 time.sleep(TIMEOUT)
