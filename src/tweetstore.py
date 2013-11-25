@@ -56,6 +56,8 @@ class TweetStore:
             self._tweet_coll.insert(dateified_tweets, continue_on_error = True)
         except DuplicateKeyError:
             pass # Ignored.
+        except UnicodeDecodeError:
+            pass # FIXME: Actually reencode tweets before inserting?
 
 # TODO: Rename module since it's not only about tweets.
 # TODO: Add tweet_ prefix to get/put.
