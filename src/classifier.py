@@ -190,7 +190,7 @@ def evaluate_features(positive, negative, load, save, cutoff, stopWordFilter):
 
 
 def usage():
-    print("USAGE: %s [-p positive_tweets] [-n negative_tweets] [-s classifier] [-l classifier] [-c training cutoff]" %
+    print("USAGE: %s [-p positive_tweets] [-n negative_tweets] [-s classifier] [-l classifier] [-c training cutoff] [-w]" %
             sys.argv[0])
 
 if __name__ == '__main__':
@@ -202,7 +202,7 @@ if __name__ == '__main__':
     stopWordFilter = False
     cutoff = 0.75
 
-    opts, args = getopt.getopt(sys.argv[1:], "hc:s:l:p:n:c:w:")
+    opts, args = getopt.getopt(sys.argv[1:], "hc:s:l:p:n:c:w")
     for o, a in opts:
         if o == "-s":
             classifier_save = a
@@ -215,7 +215,7 @@ if __name__ == '__main__':
         elif o == "-c":
             cutoff = float(a)
         elif o == "-w":
-            stopWordFilter = a
+            stopWordFilter = True
         else:
             usage()
             sys.exit(0)
