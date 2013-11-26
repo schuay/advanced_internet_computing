@@ -193,6 +193,9 @@ def usage():
     print("USAGE: %s [-p positive_tweets] [-n negative_tweets] [-s classifier] [-l classifier] [-c training cutoff] [-w]" %
             sys.argv[0])
 
+# TODO: Since we now need to download nltk stopwords, mention this in the readme
+# or implement automatic downloading into a local dir within this script.
+
 if __name__ == '__main__':
     classifier_save = None
     classifier_load = None
