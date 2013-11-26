@@ -12,7 +12,6 @@ from nltk.classify.util import apply_features
 
 NEG = 0
 POS = 1
-stopset = set(stopwords.words('english'))
 
 class FeatureSelectionI:
     def select_features(self, obj):
@@ -39,10 +38,12 @@ class AllWords(FeatureSelectionI):
 class StopWordFilter(FeatureSelectionI):
     def __init__(self, selection):
         self.__selection = selection
+        self.__stopset = set(stopwords.words('english'))
 
     def select_features(self, obj):
         fs = self.__selection.select_features(obj);
-        return {f: m for f, m in fs.iteritems() if (isinstance(f, basestring) and f.lower() not in stopset)}
+        return {f: m for f, m in fs.iteritems()
+                if (isinstance(f, basestring) and f.lower() not in self.__stopset)}
 
 class AllHashtags(FeatureSelectionI):
     @staticmethod
