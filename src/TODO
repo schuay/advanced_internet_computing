@@ -1,0 +1,3 @@
+* Unify query handling in twitter API + db. Right now, it's a mix of AND/OR and
+  multi-/single keyword support.
+* Benchmarking framework for different tweet preprocessors, classifiers, and aggregators.
