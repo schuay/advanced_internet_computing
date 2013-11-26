@@ -190,7 +190,7 @@ def evaluate_features(positive, negative, load, save, cutoff, stopWordFilter):
 
 
 def usage():
-    print("USAGE: %s [-p positive_tweets] [-n negative_tweets] [-s classifier] [-l classifier] [k training cutoff]" %
+    print("USAGE: %s [-p positive_tweets] [-n negative_tweets] [-s classifier] [-l classifier] [-c training cutoff]" %
             sys.argv[0])
 
 if __name__ == '__main__':
