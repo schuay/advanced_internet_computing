@@ -7,6 +7,7 @@ import sys
 import time
 import tweet
 
+from requests import ConnectionError
 from datetime import datetime, timedelta
 from progressbar import ProgressBar, AnimatedMarker, Timer, Counter, UnknownLength
 import tweetstore
