@@ -1,0 +1,58 @@
+<h3>Task: <?= $this->task->id ?></h3>
+
+
+<table class="table table-hover table-condensed">
+  <tr>
+    <th>Start:</th>
+    <td><?= date("H:i:s d.m.Y", strtotime($this->task->start) - 60*60); ?></td>
+  </tr>
+  <tr>
+    <th>Ende:</th>
+    <td><?= date("H:i:s d.m.Y", strtotime($this->task->end) - 60*60); ?></td>
+  </tr>
+  <tr>
+    <th>Laufzeit:</th>
+    <td><?= date("H:i:s", strtotime($this->task->completed_at) - strtotime($this->task->submitted_at) - 60*60); ?></td>
+  </tr>
+  <tr>
+    <th>Keywords</th>
+    <td><?=
+      implode(' ', array_map(function($k) {
+                return "<span class='label label-primary'>$k</span>";
+              }, $this->task->keywords));
+      ?></td>
+  </tr>
+  <tr>
+    <th>Rating:</th>
+    <td>
+      <?
+      $pos = round($this->task->rating * 100);
+      ?>
+      <div class="progress progress-striped">
+        <div class="progress-bar progress-bar-success" style="width: <?= $pos ?>%">
+          <span class=""><?= $pos ?>% Positiv</span>
+        </div>
+        <div class="progress-bar progress-bar-danger" style="width: <?= (100 - $pos) ?>%">
+          <span class=""><?= (100 - $pos) ?>% Negativ</span>
+        </div>
+      </div>
+
+    </td>
+  </tr>
+</table>
+
+<? if(count($this->task->sample)): ?>
+
+<h4>Beispiele</h4>
+<table class="table table-condensed">
+  <? shuffle($this->task->sample); ?>
+  <? foreach($this->task->sample as $sample): ?>
+  <tr class="<?= $sample[1] ? 'success' : 'danger' ?>">
+    <td>
+      <?= $sample[0] ?>
+    </td>
+  </tr>
+  <? endforeach; ?>
+</table>
+
+<? endif; ?>
