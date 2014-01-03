@@ -1,3 +1,13 @@
 * Unify query handling in twitter API + db. Right now, it's a mix of AND/OR and
   multi-/single keyword support.
 * Benchmarking framework for different tweet preprocessors, classifiers, and aggregators.
+* TODO(?): retrieve list of all tasks for display on the web frontend.
+* paper: compare against reference impl
+* parallel processing of tasks.
+* pos/neutral/neg.
+* tweet prefiltering: retweets...
+* feature selection (bigrams, smileys).
+* stopwords -> not...
+* classifier: support vector machine.
+* aggregation: weighted # of retweets.
+* show # of tweets in job.
