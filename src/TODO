@@ -5,4 +5,4 @@
 * parallel processing of tasks.
 * pos/neutral/neg.
 * tweet prefiltering: retweets (done), spam...
-* feature selection (bigrams, smileys), handle common typos?
+* feature selection (bigrams, smileys (done)), handle common typos?
