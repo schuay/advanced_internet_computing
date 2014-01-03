@@ -40,7 +40,25 @@ class AllWords(FeatureSelectionI):
             return AllWords.__get_tweet_features(obj)
         except:
             return AllWords.__get_string_features(obj)
-			
+
+class Emoticons(FeatureSelectionI):
+    @staticmethod
+    def __get_tweet_features(t):
+        return Emoticons.__get_string_features(t[tweet.TEXT])
+
+    """Extracts Emoticons from a string.
+    Regex shamelessly copied from http://stackoverflow.com/questions/5862490/how-to-match-emoticons-with-regular-expressions"""
+    @staticmethod
+    def __get_string_features(string):
+        emoticons = re.findall(r"((?::|;|=)(?:-)?(?:\)|D|P))", string)
+        return dict([(emoticon, True) for emoticon in emoticons])
+
+    def select_features(self, obj):
+        try:
+            return Emoticons.__get_tweet_features(obj)
+        except:
+            return Emoticons.__get_string_features(obj)
+
 class StopWordFilter(FeatureSelectionI):
     def __init__(self, selection):
         self.__selection = selection
@@ -190,6 +208,7 @@ def evaluate_features(positive, negative, load, save, cutoff,
         if stopWordFilter:
             print 'using stop words filter'
             featureSelection = StopWordFilter(featureSelection)
+        featureSelection = AllFeatures([Emoticons(), featureSelection])
 
         classifier = Classifier.train(raw_classifier, trainSets, featureSelection);
 
