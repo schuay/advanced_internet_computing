@@ -179,14 +179,25 @@ class Classifier:
 
 import getopt
 import nltk
+import re
 import sys
+
+def prefilter(tweets):
+    PATTERN_SPAM1 = re.compile("Get 100 followers a day")
+    PATTERN_SPAM2 = re.compile("I highly recommends you join www.m2e.asia")
+
+    FILTERS = [ lambda t: not PATTERN_SPAM1.search(t)
+              , lambda t: not PATTERN_SPAM2.search(t)
+              ]
+
+    return filter(lambda t: all([f(t) for f in FILTERS]), tweets)
 
 def evaluate_features(positive, negative, load, save, cutoff,
                       stopWordFilter, raw_classifier):
     with open(positive, 'r') as f:
-        posTweets = re.split(r'\n', f.read())
+        posTweets = prefilter(re.split(r'\n', f.read()))
     with open(negative, 'r') as f:
-        negTweets = re.split(r'\n', f.read())
+        negTweets = prefilter(re.split(r'\n', f.read()))
  
     #selects cutoff of the features to be used for training and (1 - cutoff)
     # to be used for testing

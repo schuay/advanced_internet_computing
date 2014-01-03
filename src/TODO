@@ -4,5 +4,4 @@
 * paper: compare against reference impl
 * parallel processing of tasks.
 * pos/neutral/neg.
-* tweet prefiltering: retweets (done), spam...
 * feature selection (bigrams, smileys (done)), handle common typos?
