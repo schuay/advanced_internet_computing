@@ -113,5 +113,8 @@ if __name__ == "__main__":
 
     ts = TweetStore(db)
     for t in ts.get(keywords, start, end):
-        print t[tweet.TEXT]
-        print t[tweet.CREATED_AT]
+        try:
+            print t[tweet.TEXT]
+            print t[tweet.CREATED_AT]
+        except:
+            pass # FIXME: dirty hack to work around some encoding issues
