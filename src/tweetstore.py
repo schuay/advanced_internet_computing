@@ -41,9 +41,9 @@ class TweetStore:
                     , "$lte": end
                     }
                 })
-        # FIXME: Use twitter's include_retweets parameter instead of this filter and the
-        # unique TEXT index.
-        tweets = filter(lambda t: not t[tweet.TEXT].startswith("RT "), cursor)
+        # Filter retweets. This is here, so that we can use old databases without having to worry
+        # about them containing retweets. We actually filter them on insert too.
+        tweets = filter(lambda t: not tweet.RETWEETED_STATUS in t, cursor)
         return tweets
 
     """Stores the specified tweets into the database."""
@@ -53,7 +53,8 @@ class TweetStore:
             return
 
         try:
-            self._tweet_coll.insert(dateified_tweets, continue_on_error = True)
+            filtered_tweets = filter(lambda t: not tweet.RETWEETED_STATUS in t, dateified_tweets)
+            self._tweet_coll.insert(filtered_tweets, continue_on_error = True)
         except DuplicateKeyError:
             pass # Ignored.
         except UnicodeDecodeError:

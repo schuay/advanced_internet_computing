@@ -3,6 +3,8 @@ from datetime import datetime
 CREATED_AT = "created_at"
 ID = "id"
 TEXT = "text"
+RETWEETED_STATUS = "retweeted_status"
+RETWEET_COUNT = "retweet_count"
 
 """This function converts date fields we care
 about (such as "created_at") into proper datetime objects."""
