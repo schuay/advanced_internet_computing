@@ -2,7 +2,7 @@ import gettweets
 import json
 import tweet
 
-from aggregator import MeanAggregator
+from aggregator import RetweetWeightedAggregator
 from classifier import Classifier
 from datetime import datetime
 import tweetstore

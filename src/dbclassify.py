@@ -2,8 +2,9 @@
 
 from classifier import Classifier
 from classifier import AllWords
+from classifier import StopWordFilter
 from tweetstore import TweetStore
-from aggregator import MeanAggregator
+from aggregator import RetweetWeightedAggregator
 
 import tweet
 
@@ -40,7 +41,7 @@ if __name__ == "__main__":
             sys.exit(0)
 
     classifier = Classifier.load(classifier)
-    aggregator = MeanAggregator()
+    aggregator = RetweetWeightedAggregator()
 
     ts = TweetStore(db)
     for t in ts.get(keywords, start, end):

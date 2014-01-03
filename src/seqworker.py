@@ -4,7 +4,7 @@ import task
 from threading import Thread
 from classifier import Classifier
 from classifier import AllWords
-from aggregator import MeanAggregator
+from aggregator import RetweetWeightedAggregator
 
 GET_TIMEOUT = 0.1
 
@@ -31,5 +31,5 @@ class SeqWorker(Thread):
                 except Queue.Empty:
                     pass
 
-            task.run(t, self.__db_name, self.__classifier, MeanAggregator())
+            task.run(t, self.__db_name, self.__classifier, RetweetWeightedAggregator())
             q.task_done()
