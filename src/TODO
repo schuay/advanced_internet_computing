@@ -4,8 +4,7 @@
 * paper: compare against reference impl
 * parallel processing of tasks.
 * pos/neutral/neg.
-* tweet prefiltering: retweets...
-* feature selection (bigrams, smileys).
+* tweet prefiltering: retweets (done), spam...
+* feature selection (bigrams, smileys), handle common typos?
 * classifier: support vector machine.
-* aggregation: weighted # of retweets.
 * show # of tweets in job.
