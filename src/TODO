@@ -5,3 +5,4 @@
 * parallel processing of tasks.
 * pos/neutral/neg.
 * feature selection (bigrams, smileys (done)), handle common typos?
+* with several new options (bayes <-> svm, different features, spam filter) find new "best" configuration
