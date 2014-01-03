@@ -6,4 +6,3 @@
 * pos/neutral/neg.
 * tweet prefiltering: retweets (done), spam...
 * feature selection (bigrams, smileys), handle common typos?
-* classifier: support vector machine.

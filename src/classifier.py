@@ -8,10 +8,16 @@ import tweet
 from nltk.corpus import stopwords
 
 from nltk.classify import NaiveBayesClassifier
+from nltk.classify import SklearnClassifier
 from nltk.classify.util import apply_features
+from sklearn.svm import LinearSVC
 
 NEG = 0
 POS = 1
+
+CLASSIFIERS = { 'bayes': NaiveBayesClassifier
+              , 'svm':   SklearnClassifier(LinearSVC())
+              }
 
 class FeatureSelectionI:
     def select_features(self, obj):
@@ -108,7 +114,7 @@ class Classifier:
     """Takes a dictionary with keys: POSITIVE/NEGATIVE, values: list of
     individual tweets. Returns a classifier object trained on the given training sets."""
     @staticmethod
-    def train(training_sets, feature_selection=AllWords()):
+    def train(raw_classifier, training_sets, feature_selection=AllWords()):
         training = []
 
         # Since we have a rather large amount of training data, build features
@@ -117,7 +123,7 @@ class Classifier:
                              for x in training_sets[cl]]
         train_set = apply_features(feature_selection.select_features, tuple_set)
 
-        return Classifier(NaiveBayesClassifier.train(train_set), feature_selection, len(tuple_set))
+        return Classifier(raw_classifier.train(train_set), feature_selection, len(tuple_set))
 
     """Evaluates the classifier with the given data sets."""
     def evaluate(self, test_sets):
@@ -138,7 +144,11 @@ class Classifier:
         print 'pos recall:', nltk.metrics.recall(referenceSets[POS], testSets[POS])
         print 'neg precision:', nltk.metrics.precision(referenceSets[NEG], testSets[NEG])
         print 'neg recall:', nltk.metrics.recall(referenceSets[NEG], testSets[NEG])
-        print self.__nltk_classifier.show_most_informative_features(10)
+
+        try:
+            print self.__nltk_classifier.show_most_informative_features(10)
+        except AttributeError:
+            pass # Not all classifiers provide this function.
 
 
     def classify(self, obj):
@@ -153,7 +163,8 @@ import getopt
 import nltk
 import sys
 
-def evaluate_features(positive, negative, load, save, cutoff, stopWordFilter):
+def evaluate_features(positive, negative, load, save, cutoff,
+                      stopWordFilter, raw_classifier):
     with open(positive, 'r') as f:
         posTweets = re.split(r'\n', f.read())
     with open(negative, 'r') as f:
@@ -180,7 +191,7 @@ def evaluate_features(positive, negative, load, save, cutoff, stopWordFilter):
             print 'using stop words filter'
             featureSelection = StopWordFilter(featureSelection)
 
-        classifier = Classifier.train(trainSets, featureSelection);
+        classifier = Classifier.train(raw_classifier, trainSets, featureSelection);
 
         trainSets = None
 
@@ -198,8 +209,16 @@ def evaluate_features(positive, negative, load, save, cutoff, stopWordFilter):
 
 
 def usage():
-    print("USAGE: %s [-p positive_tweets] [-n negative_tweets] [-s classifier] [-l classifier] [-c training cutoff] [-w]" %
+    print("""USAGE: %s [-p positive_tweets] [-n negative_tweets] [-s classifier] [-l classifier] [-c training cutoff] [-w]
+            -p  Text file containing one positive tweet per line.
+            -n  Text file containing one negative tweet per line.
+            -s  Saves the classifier to the specified file.
+            -l  Loads the classifier from the specified file.
+            -c  Specifies the percentage of training tweets (default = 0.75).
+            -w  Enables the stopword filter (default = False).
+            -t  Selects the classifier type. One of 'bayes', 'svm' (default).""" %
             sys.argv[0])
+    sys.exit(1)
 
 # TODO: Since we now need to download nltk stopwords, mention this in the readme
 # or implement automatic downloading into a local dir within this script.
@@ -212,8 +231,9 @@ if __name__ == '__main__':
     negative_file = 'sentiment.neg'
     stopWordFilter = False
     cutoff = 0.75
+    raw_classifier = CLASSIFIERS['svm']
 
-    opts, args = getopt.getopt(sys.argv[1:], "hc:s:l:p:n:c:w")
+    opts, args = getopt.getopt(sys.argv[1:], "hc:s:l:p:n:c:wt:")
     for o, a in opts:
         if o == "-s":
             classifier_save = a
@@ -227,13 +247,17 @@ if __name__ == '__main__':
             cutoff = float(a)
         elif o == "-w":
             stopWordFilter = True
+        elif o == "-t":
+            if not a in CLASSIFIERS:
+                usage()
+            raw_classifier = CLASSIFIERS[a]
         else:
             usage()
-            sys.exit(0)
 
     evaluate_features(positive_file,
                       negative_file,
                       classifier_load,
                       classifier_save,
                       cutoff,
-                      stopWordFilter)
+                      stopWordFilter,
+                      raw_classifier)

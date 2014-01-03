@@ -16,6 +16,7 @@ Install all required dependencies:
 * python2-pymongo
 * python2-requests-oauthlib: https://github.com/requests/requests-oauthlib
 * python2-requests: http://docs.python-requests.org/en/latest/
+* python2-scikit-learn
 * python2-twython: https://github.com/ryanmcgrath/twython
 
 In case you run into errors in requests/requests-oauthlib, try the quick fix in
