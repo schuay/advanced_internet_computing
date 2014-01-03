@@ -63,6 +63,13 @@ class TweetStore:
 # TODO: Rename module since it's not only about tweets.
 # TODO: Add tweet_ prefix to get/put.
 
+    """Retrieves a list of all tasks."""
+    def task_get_all(self):
+        ts = list(self._task_coll.find());
+        for t in ts:
+            t.pop('_id')
+        return ts
+
     """Retrieves a task by id, or returns None if not found."""
     def task_get(self, task_id):
         t = self._task_coll.find_one({ task.ID: task_id });

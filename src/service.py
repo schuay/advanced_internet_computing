@@ -61,6 +61,16 @@ def api_get_task(task_id):
         abort(NOT_FOUND)
     return jsonify({'tasks': t})
 
+# Returns details of all tasks as JSON data.
+# curl localhost:5000/api/tasks
+# FIXME: This code sucks but some webdesigner guy needs it because <random web buzzword>.
+@app.route('/api/tasks', methods = ['GET'])
+def api_get_all_tasks():
+    ts = store.task_get_all()
+    if not ts:
+        abort(NOT_FOUND)
+    return jsonify({'tasks': ts})
+
 @app.route('/api/tasks/<string:task_id>', methods = ['DELETE'])
 def api_del_task(task_id):
     store.task_rm(task_id)
