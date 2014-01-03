@@ -15,6 +15,7 @@ SUBMITTED_AT = "submitted_at"
 COMPLETED_AT = "completed_at"
 RATING = "rating"
 SAMPLE = "sample"
+NUM_TWEETS = "num_tweets"
 
 SAMPLE_SIZE = 10
 
@@ -67,6 +68,7 @@ def run(task, db_name, classifier, aggregator):
 
         task[SAMPLE] = sample
         task[RATING] = aggregator.get_sentiment()
+        task[NUM_TWEETS] = aggregator.get_num()
         task[COMPLETED_AT] = datetime.utcnow()
 
         print task

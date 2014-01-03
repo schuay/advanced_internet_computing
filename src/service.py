@@ -99,7 +99,8 @@ def api_post_task():
                , task.SUBMITTED_AT: datetime.datetime.utcnow()
                , task.COMPLETED_AT: None
                , task.RATING: None
-               , task.SAMPLE: []
+               , task.SAMPLE: None
+               , task.NUM_TWEETS: 0
                }
 
     try:
