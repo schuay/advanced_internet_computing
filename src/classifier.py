@@ -38,12 +38,19 @@ class AllWords(FeatureSelectionI):
 class StopWordFilter(FeatureSelectionI):
     def __init__(self, selection):
         self.__selection = selection
-        self.__stopset = set(stopwords.words('english'))
+        self.__stopset = StopWordFilter.stopset()
 
     def select_features(self, obj):
         fs = self.__selection.select_features(obj);
         return {f: m for f, m in fs.iteritems()
                 if (isinstance(f, basestring) and f.lower() not in self.__stopset)}
+
+    @staticmethod
+    def stopset():
+        sw = set(stopwords.words('english'))
+        meaningful_sw = set([ 'but', 'against', 'off', 'most', 'more', 'few'
+                            , 'some', 'no', 'nor', 'not', 'very'])
+        return sw - meaningful_sw
 
 class AllHashtags(FeatureSelectionI):
     @staticmethod

@@ -7,7 +7,6 @@
 * pos/neutral/neg.
 * tweet prefiltering: retweets...
 * feature selection (bigrams, smileys).
-* stopwords -> not...
 * classifier: support vector machine.
 * aggregation: weighted # of retweets.
 * show # of tweets in job.
