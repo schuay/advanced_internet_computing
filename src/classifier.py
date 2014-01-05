@@ -3,12 +3,12 @@
 import math
 import cPickle as pickle
 import re
-
+import csv
 import tweet
 from nltk.corpus import stopwords
 
 from nltk.classify import NaiveBayesClassifier
-from nltk.classify import SklearnClassifier
+from nltk.classify.scikitlearn import SklearnClassifier
 from nltk.classify.util import apply_features
 from sklearn.svm import LinearSVC
 
@@ -19,6 +19,13 @@ CLASSIFIERS = { 'bayes': NaiveBayesClassifier
               , 'svm':   SklearnClassifier(LinearSVC())
               }
 
+with open('classified_words.txt', 'rb') as file:
+       reader = csv.reader(file, delimiter='\t')
+       word_list = {}
+       for row in reader:
+           key = row[0]
+           word_list[key]=row[1]
+		   
 class FeatureSelectionI:
     def select_features(self, obj):
         raise NotImplementedError("Please implement this yourself.")
@@ -105,6 +112,22 @@ class AnyFeatures(FeatureSelectionI):
 
         return dict()
 
+"""Applies features that are in a list with well-known sentiments."""
+class SentimentFeatures(FeatureSelectionI):
+   
+    @staticmethod
+    def __get_string_features(string):
+        words = re.findall(r"[\w']+|[.,!?;]", string)
+        return dict([(word.lower(), True) for word in words])
+		
+    def select_features(self, obj):
+       words = SentimentFeatures.__get_string_features(obj)	  
+       features = {}	 
+       for word in words:
+         if(word in word_list):
+             features['contains(%s)' % word] = (word in word_list)
+       return features	   
+		
 """Applies all feature selections in list.
 If two methods yield the same feature, the last one is used."""
 class AllFeatures(FeatureSelectionI):
@@ -215,7 +238,8 @@ def evaluate_features(positive, negative, load, save, cutoff,
         trainSets[POS] = posTweets[:posCutoff]
         trainSets[NEG] = negTweets[:negCutoff]
 
-        featureSelection = AllWords()
+        #featureSelection = AllWords()
+        featureSelection = SentimentFeatures()
         if stopWordFilter:
             print 'using stop words filter'
             featureSelection = StopWordFilter(featureSelection)
