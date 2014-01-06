@@ -1,7 +1,9 @@
 #!/usr/bin/env python2
 
 from classifier import Classifier
+from classifier import AllFeatures
 from classifier import AllWords
+from classifier import Emoticons
 from classifier import StopWordFilter
 from tweetstore import TweetStore
 from aggregator import RetweetWeightedAggregator
