@@ -19,8 +19,8 @@ class UrlTransformer(TweetTransformerI):
         self.__pattern = re.compile('(https?:\/\/)?([\da-z\.-]+)\.([a-z\.]{2,6})([\/\w\.-]*)*\/?')
 
     def transform(self, obj):
-        o[tweet.TEXT] = self.__pattern.sub('TOKEN_URL', obj[tweet.TEXT])
-        return o
+        obj[tweet.TEXT] = self.__pattern.sub('TOKEN_URL', obj[tweet.TEXT])
+        return obj
 
 class UserTransformer(TweetTransformerI):
     """This transformer replaces any twitter username within tweet texts with
@@ -29,8 +29,8 @@ class UserTransformer(TweetTransformerI):
         self.__pattern = re.compile('(?<=^|(?<=[^a-zA-Z0-9-_\\.]))@([A-Za-z]+[A-Za-z0-9_]+)')
 
     def transform(self, obj):
-        o[tweet.TEXT] = self.__pattern.sub('TOKEN_USER', obj[tweet.TEXT])
-        return o
+        obj[tweet.TEXT] = self.__pattern.sub('TOKEN_USER', obj[tweet.TEXT])
+        return obj
 
 class MulticharTransformer(TweetTransformerI):
     """This transformer replaces chars repeated more than two times with exactly
@@ -39,8 +39,8 @@ class MulticharTransformer(TweetTransformerI):
         self.__pattern = re.compile(r'([a-zA-Z0-9!?])\1{2,}')
 
     def transform(self, obj):
-        o[tweet.TEXT] = self.__pattern.sub(r'\1\1', obj[tweet.TEXT])
-        return o
+        obj[tweet.TEXT] = self.__pattern.sub(r'\1\1', obj[tweet.TEXT])
+        return obj
 
 class SequenceTransformer(TweetTransformerI):
     """This transformer runs a list of transformers in sequence."""
