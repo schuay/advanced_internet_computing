@@ -34,7 +34,7 @@ class Emoticons(FeatureSelectionI):
 class StopWordFilter(FeatureSelectionI):
     def __init__(self, selection):
         self.__selection = selection
-        self.__stopset = StopWordFilter.stopset()
+        self.__stopset = StopWordFilter.__stopset()
 
     def select_features(self, obj):
         fs = self.__selection.select_features(obj);
@@ -42,7 +42,7 @@ class StopWordFilter(FeatureSelectionI):
                 if (isinstance(f, basestring) and f.lower() not in self.__stopset)}
 
     @staticmethod
-    def stopset():
+    def __stopset():
         sw = set(stopwords.words('english'))
         meaningful_sw = set([ 'but', 'against', 'off', 'most', 'more', 'few'
                             , 'some', 'no', 'nor', 'not', 'very'])
