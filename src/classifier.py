@@ -92,9 +92,11 @@ import sys
 def prefilter(tweets):
     PATTERN_SPAM1 = re.compile("Get 100 followers a day")
     PATTERN_SPAM2 = re.compile("I highly recommends you join www.m2e.asia")
+    PATTERN_SPAM3 = re.compile("Banksyart2.*posting there since having probs")
 
     FILTERS = [ lambda t: not PATTERN_SPAM1.search(t)
               , lambda t: not PATTERN_SPAM2.search(t)
+              , lambda t: not PATTERN_SPAM3.search(t)
               ]
 
     return filter(lambda t: all([f(t[tweet.TEXT]) for f in FILTERS]), tweets)
