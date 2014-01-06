@@ -21,8 +21,6 @@ import task
 import uuid
 
 from Queue import Queue
-from classifier import AllWords
-from classifier import StopWordFilter
 from classifier import Classifier
 from flask import Flask, abort, json, jsonify, make_response, request, url_for
 from seqworker import SeqWorker

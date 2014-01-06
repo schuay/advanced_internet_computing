@@ -3,7 +3,6 @@ import task
 
 from threading import Thread
 from classifier import Classifier
-from classifier import AllWords
 from aggregator import RetweetWeightedAggregator
 
 GET_TIMEOUT = 0.1
