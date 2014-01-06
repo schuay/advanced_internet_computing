@@ -20,3 +20,8 @@ def to_date(tweet):
     dt = datetime.strptime(datestr[0:20] + datestr[26:], "%a %b %d %H:%M:%S %Y")
     tweet[CREATED_AT] = dt
     return tweet
+
+def to_ascii(tweet):
+    """Converts tweet text to ascii, replacing invalid chars with '?'."""
+    tweet[TEXT] = tweet[TEXT].encode('ascii', 'replace')
+    return tweet

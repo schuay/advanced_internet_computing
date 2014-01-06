@@ -48,17 +48,16 @@ class TweetStore:
 
     """Stores the specified tweets into the database."""
     def put(self, tweets):
-        dateified_tweets = map(tweet.to_date, tweets)
-        if len(dateified_tweets) == 0:
+        filtered_tweets = filter(lambda t: not tweet.RETWEETED_STATUS in t, tweets)
+        normalized_tweets = map(lambda t: tweet.to_date(tweet.to_ascii(t)), filtered_tweets)
+
+        if len(normalized_tweets) == 0:
             return
 
         try:
-            filtered_tweets = filter(lambda t: not tweet.RETWEETED_STATUS in t, dateified_tweets)
-            self._tweet_coll.insert(filtered_tweets, continue_on_error = True)
+            self._tweet_coll.insert(normalized_tweets, continue_on_error = True)
         except DuplicateKeyError:
             pass # Ignored.
-        except UnicodeDecodeError:
-            pass # FIXME: Actually reencode tweets before inserting?
 
 # TODO: Rename module since it's not only about tweets.
 # TODO: Add tweet_ prefix to get/put.
