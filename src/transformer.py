@@ -7,6 +7,10 @@ class TweetTransformerI:
         """Takes a tweet object and returns a transformed version."""
         raise NotImplementedError("Please implement this yourself.")
 
+class IdentityTransformer(TweetTransformerI):
+    def transform(self, obj):
+        return obj
+
 # TODO: This regex is a bit overeager and transforms strings such as '....' to TOKEN_URL.
 class UrlTransformer(TweetTransformerI):
     """This transformer replaces any url within tweet texts with

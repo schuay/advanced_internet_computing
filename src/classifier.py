@@ -5,6 +5,7 @@ import cPickle as pickle
 import re
 
 import featureselection as fs
+import transformer as tr
 import tweet
 
 from nltk.classify import NaiveBayesClassifier
@@ -20,9 +21,10 @@ CLASSIFIERS = { 'bayes': NaiveBayesClassifier
               }
 
 class Classifier:
-    def __init__(self, classifier, feature_selection, train_size):
+    def __init__(self, classifier, feature_selection, transformer, train_size):
         self.__nltk_classifier = classifier
         self.__fs = feature_selection
+        self.__tr = transformer
         self.__train_size = train_size
 
     @staticmethod
@@ -33,20 +35,23 @@ class Classifier:
     """Takes a dictionary with keys: POSITIVE/NEGATIVE, values: list of
     individual tweets. Returns a classifier object trained on the given training sets."""
     @staticmethod
-    def train(raw_classifier, training_sets, feature_selection = fs.AllWords()):
+    def train(raw_classifier, training_sets, feature_selection, transformer):
         training = []
 
         # Since we have a rather large amount of training data, build features
         # lazily to avoid running out of memory.
-        tuple_set = [(x, cl) for cl in [POS, NEG]
+        tuple_set = [(transformer.transform(x), cl)
+                             for cl in [POS, NEG]
                              for x in training_sets[cl]]
         train_set = apply_features(feature_selection.select_features, tuple_set)
 
-        return Classifier(raw_classifier.train(train_set), feature_selection, len(tuple_set))
+        return Classifier(raw_classifier.train(train_set), feature_selection,
+                transformer, len(tuple_set))
 
     """Evaluates the classifier with the given data sets."""
     def evaluate(self, test_sets):
-        tuple_set = [(x, cl) for cl in [POS, NEG]
+        tuple_set = [(self.__tr.transform(x), cl)
+                             for cl in [POS, NEG]
                              for x in test_sets[cl]]
         test_set = apply_features(self.__fs.select_features, tuple_set)
 
@@ -71,7 +76,8 @@ class Classifier:
 
 
     def classify(self, obj):
-        features = self.__fs.select_features(obj)
+        transformed = self.__tr.transform(obj)
+        features = self.__fs.select_features(transformed)
         return self.__nltk_classifier.classify(features)
 
     def save(self, filename):
@@ -126,7 +132,10 @@ def evaluate_features(positive, negative, load, save, cutoff,
             featureSelection = fs.StopWordFilter(featureSelection)
         featureSelection = fs.AllFeatures([fs.Emoticons(), featureSelection])
 
-        classifier = Classifier.train(raw_classifier, trainSets, featureSelection);
+        transformer = tr.IdentityTransformer()
+
+        classifier = Classifier.train(raw_classifier, trainSets,
+                featureSelection, transformer);
 
         trainSets = None
 
