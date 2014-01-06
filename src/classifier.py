@@ -104,7 +104,7 @@ def to_tweets(lines):
     return [{tweet.TEXT: t} for t in lines]
 
 def evaluate_features(positive, negative, load, save, cutoff,
-                      stopWordFilter, raw_classifier):
+                      raw_classifier, feature_selector, transformer):
     with open(positive, 'r') as f:
         posTweets = prefilter(to_tweets(re.split(r'\n', f.read())))
     with open(negative, 'r') as f:
@@ -126,16 +126,8 @@ def evaluate_features(positive, negative, load, save, cutoff,
         trainSets[POS] = posTweets[:posCutoff]
         trainSets[NEG] = negTweets[:negCutoff]
 
-        featureSelection = fs.AllWords()
-        if stopWordFilter:
-            print 'using stop words filter'
-            featureSelection = fs.StopWordFilter(featureSelection)
-        featureSelection = fs.AllFeatures([fs.Emoticons(), featureSelection])
-
-        transformer = tr.IdentityTransformer()
-
         classifier = Classifier.train(raw_classifier, trainSets,
-                featureSelection, transformer);
+                feature_selector, transformer);
 
         trainSets = None
 
@@ -151,17 +143,38 @@ def evaluate_features(positive, negative, load, save, cutoff,
     trainSets[NEG] = negTweets[negCutoff:]
     classifier.evaluate(trainSets)
 
+FEAT_DEFAULT = 'aes'
+FEATURE_SELECTORS = { 'aes': fs.AllFeatures([fs.StopWordFilter(fs.AllWords()), fs.Emoticons()])
+                    , 'ae':  fs.AllFeatures([fs.AllWords(), fs.Emoticons()])
+                    , 'a':   fs.AllWords()
+                    , 'as':  fs.StopWordFilter(fs.AllWords())
+                    }
+
+TRAN_DEFAULT = 'id'
+TRANSFORMERS = { 'id':    tr.IdentityTransformer()
+               , 'url':   tr.UrlTransformer()
+               , 'user':  tr.UserTransformer()
+               , 'mchar': tr.MulticharTransformer()
+               }
 
 def usage():
-    print("""USAGE: %s [-p positive_tweets] [-n negative_tweets] [-s classifier] [-l classifier] [-c training cutoff] [-w]
+    print("""USAGE: %s [-p positive_tweets] [-n negative_tweets] [-s classifier]
+                       [-l classifier] [-c cutoff] [-f type] [-r type] [-t type]
             -p  Text file containing one positive tweet per line.
             -n  Text file containing one negative tweet per line.
             -s  Saves the classifier to the specified file.
             -l  Loads the classifier from the specified file.
             -c  Specifies the percentage of training tweets (default = 0.75).
-            -w  Enables the stopword filter (default = False).
+            -f  Selects the feature selector. One of %s (default = '%s').
+            -r  Enables the given transformer. Can be passed multiple times.
+                One of %s (default = '%s').
             -t  Selects the classifier type. One of 'bayes', 'svm' (default).""" %
-            sys.argv[0])
+            ( sys.argv[0]
+            , ", ".join(["'" + t + "'" for t in FEATURE_SELECTORS.keys()])
+            , FEAT_DEFAULT
+            , ", ".join(["'" + t + "'" for t in TRANSFORMERS.keys()])
+            , TRAN_DEFAULT
+            ))
     sys.exit(1)
 
 # TODO: Since we now need to download nltk stopwords, mention this in the readme
@@ -173,11 +186,12 @@ if __name__ == '__main__':
 
     positive_file = 'sentiment.pos'
     negative_file = 'sentiment.neg'
-    stopWordFilter = False
     cutoff = 0.75
     raw_classifier = CLASSIFIERS['svm']
+    feature_selector = FEATURE_SELECTORS[FEAT_DEFAULT]
+    transformers = [TRANSFORMERS[TRAN_DEFAULT]]
 
-    opts, args = getopt.getopt(sys.argv[1:], "hc:s:l:p:n:c:wt:")
+    opts, args = getopt.getopt(sys.argv[1:], "hc:s:l:p:n:c:t:f:r:")
     for o, a in opts:
         if o == "-s":
             classifier_save = a
@@ -189,19 +203,27 @@ if __name__ == '__main__':
             negative_file = a
         elif o == "-c":
             cutoff = float(a)
-        elif o == "-w":
-            stopWordFilter = True
         elif o == "-t":
             if not a in CLASSIFIERS:
                 usage()
             raw_classifier = CLASSIFIERS[a]
+        elif o == "-f":
+            if not a in FEATURE_SELECTORS:
+                usage()
+            feature_selector = FEATURE_SELECTORS[a]
+        elif o == "-r":
+            if not a in TRANSFORMERS:
+                usage()
+            transformers.append(TRANSFORMERS[a])
         else:
             usage()
 
-    evaluate_features(positive_file,
-                      negative_file,
-                      classifier_load,
-                      classifier_save,
-                      cutoff,
-                      stopWordFilter,
-                      raw_classifier)
+    evaluate_features( positive_file
+                     , negative_file
+                     , classifier_load
+                     , classifier_save
+                     , cutoff
+                     , raw_classifier
+                     , feature_selector
+                     , tr.SequenceTransformer(transformers)
+                     )
