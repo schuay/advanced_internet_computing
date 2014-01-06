@@ -190,17 +190,21 @@ def prefilter(tweets):
               , lambda t: not PATTERN_SPAM2.search(t)
               ]
 
-    return filter(lambda t: all([f(t) for f in FILTERS]), tweets)
+    return filter(lambda t: all([f(t[tweet.TEXT]) for f in FILTERS]), tweets)
+
+def to_tweets(lines):
+    """Turns a list of tweet texts into a list of tweet dict objects."""
+    return [{tweet.TEXT: t} for t in lines]
 
 def evaluate_features(positive, negative, load, save, cutoff,
                       stopWordFilter, raw_classifier):
     with open(positive, 'r') as f:
-        posTweets = prefilter(re.split(r'\n', f.read()))
+        posTweets = prefilter(to_tweets(re.split(r'\n', f.read())))
     with open(negative, 'r') as f:
-        negTweets = prefilter(re.split(r'\n', f.read()))
+        negTweets = prefilter(to_tweets(re.split(r'\n', f.read())))
  
-    #selects cutoff of the features to be used for training and (1 - cutoff)
-    # to be used for testing
+    # Selects cutoff of the features to be used for training and (1 - cutoff)
+    # to be used for testing.
     posCutoff = int(math.floor(len(posTweets)*cutoff))
     negCutoff = int(math.floor(len(negTweets)*cutoff))
 
