@@ -133,6 +133,11 @@ def evaluate_features(positive, negative, load, save, cutoff,
 
         trainSets = None
 
+    trainSets = [list() for x in [POS, NEG]]
+    trainSets[POS] = posTweets[posCutoff:]
+    trainSets[NEG] = negTweets[negCutoff:]
+    posTweets, negTweets = None, None # Free some space.
+
     if save:
         print 'saving classifier as \'%s\'' % save
 
@@ -140,9 +145,6 @@ def evaluate_features(positive, negative, load, save, cutoff,
 
     print 'testing classifier...'
 
-    trainSets = [list() for x in [POS, NEG]]
-    trainSets[POS] = posTweets[posCutoff:]
-    trainSets[NEG] = negTweets[negCutoff:]
     classifier.evaluate(trainSets)
 
 FEAT_DEFAULT = 'aes'
