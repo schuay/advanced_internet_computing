@@ -48,7 +48,7 @@ if __name__ == "__main__":
     ts = TweetStore(db)
     for t in ts.get(keywords, start, end):
         s = classifier.classify(t)
-        print ("%s -- sentiment: %s" % (t[tweet.TEXT],
+        print ("%s -- sentiment: %s" % (tweet.to_ascii(t)[tweet.TEXT],
             "positive" if (s == 1) else "negative"))
         aggregator.add(t, s)
 
