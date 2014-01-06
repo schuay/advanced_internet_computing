@@ -26,38 +26,24 @@ class FeatureSelectionI:
 class AllWords(FeatureSelectionI):
     @staticmethod
     def __get_tweet_features(t):
-        return AllWords.__get_string_features(t[tweet.TEXT])
-
-    """Breaks up text into list of words. Takes a string and returns a dictionary mapping
-    word keys to True values."""
-    @staticmethod
-    def __get_string_features(string):
-        words = re.findall(r"[\w']+|[.,!?;]", string)
+        """Breaks up text into list of words. Takes a string and returns a dictionary mapping
+        word keys to True values."""
+        words = re.findall(r"[\w']+|[.,!?;]", t[tweet.TEXT])
         return dict([(word.lower(), True) for word in words])
 
     def select_features(self, obj):
-        try:
-            return AllWords.__get_tweet_features(obj)
-        except:
-            return AllWords.__get_string_features(obj)
+        return AllWords.__get_tweet_features(obj)
 
 class Emoticons(FeatureSelectionI):
     @staticmethod
     def __get_tweet_features(t):
-        return Emoticons.__get_string_features(t[tweet.TEXT])
-
-    """Extracts Emoticons from a string.
-    Regex shamelessly copied from http://stackoverflow.com/questions/5862490/how-to-match-emoticons-with-regular-expressions"""
-    @staticmethod
-    def __get_string_features(string):
-        emoticons = re.findall(r"((?::|;|=)(?:-)?(?:\)|D|P))", string)
+        """Extracts Emoticons from a string.
+        Regex shamelessly copied from http://stackoverflow.com/questions/5862490/how-to-match-emoticons-with-regular-expressions"""
+        emoticons = re.findall(r"((?::|;|=)(?:-)?(?:\)|D|P))", t[tweet.TEXT])
         return dict([(emoticon, True) for emoticon in emoticons])
 
     def select_features(self, obj):
-        try:
-            return Emoticons.__get_tweet_features(obj)
-        except:
-            return Emoticons.__get_string_features(obj)
+        return Emoticons.__get_tweet_features(obj)
 
 class StopWordFilter(FeatureSelectionI):
     def __init__(self, selection):
@@ -79,18 +65,11 @@ class StopWordFilter(FeatureSelectionI):
 class AllHashtags(FeatureSelectionI):
     @staticmethod
     def __get_tweet_features(t):
-        return AllHashtags.__get_string_features(t[tweet.TEXT])
-
-    @staticmethod
-    def __get_string_features(string):
-        words = re.findall(r"#[\w']+", string)
+        words = re.findall(r"#[\w']+", t[tweet.TEXT])
         return dict([(word, True) for word in words])
 
     def select_features(self, obj):
-        try:
-            return AllHashtags.__get_tweet_features(obj)
-        except:
-            return AllHashtags.__get_string_features(obj)
+        return AllHashtags.__get_tweet_features(obj)
 
 """Applies the feature selections in list that yields features."""
 class AnyFeatures(FeatureSelectionI):
