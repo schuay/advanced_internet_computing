@@ -54,17 +54,23 @@ class Classifier:
         tuple_set = [(self.__tr.transform(x), cl)
                              for cl in [POS, NEG]
                              for x in test_sets[cl]]
-        test_set = apply_features(self.__fs.select_features, tuple_set)
-
         referenceSets = [set() for x in [POS, NEG]]
+        referenceList = []
         testSets = [set() for x in [POS, NEG]]
+        testList = []
         for i, (t, label) in enumerate(tuple_set):
             referenceSets[label].add(i)
+            referenceList.append(label)
             predicted = self.classify(t)
             testSets[predicted].add(i)
+            testList.append(predicted)
 
-        print 'train on %d instances, test on %d instances' % (self.__train_size, len(tuple_set))
-        print 'accuracy:', nltk.classify.util.accuracy(self.__nltk_classifier, test_set)
+        tuple_set = None
+        gc.collect()
+
+        print 'train on %d instances, test on %d instances' % (self.__train_size,
+                sum(map(len, test_sets)))
+        print 'accuracy:', nltk.metrics.accuracy(referenceList, testList)
         print 'pos precision:', nltk.metrics.precision(referenceSets[POS], testSets[POS])
         print 'pos recall:', nltk.metrics.recall(referenceSets[POS], testSets[POS])
         print 'neg precision:', nltk.metrics.precision(referenceSets[NEG], testSets[NEG])
