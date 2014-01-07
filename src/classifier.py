@@ -1,5 +1,6 @@
 #!/usr/bin/env python2
 
+import gc
 import math
 import cPickle as pickle
 import re
@@ -132,11 +133,13 @@ def evaluate_features(positive, negative, load, save, cutoff,
                 feature_selector, transformer);
 
         trainSets = None
+        gc.collect()
 
     trainSets = [list() for x in [POS, NEG]]
     trainSets[POS] = posTweets[posCutoff:]
     trainSets[NEG] = negTweets[negCutoff:]
     posTweets, negTweets = None, None # Free some space.
+    gc.collect()
 
     if save:
         print 'saving classifier as \'%s\'' % save
