@@ -13,20 +13,20 @@
     </thead>
     <tbody>
       <?php foreach ($this->tasks as $task): ?>
-        <tr class="<?= is_null($task->tasks->rating) ? 'warning' : ($task->tasks->rating < 0.5 ? 'danger' : 'success'); ?>">
+        <tr class="<?= is_null($task->rating) ? 'warning' : ($task->rating < 0.5 ? 'danger' : 'success'); ?>">
           <td>
-            <? if($task->tasks->completed_at): ?>
-              <a href="<?=$this->url(array('action' => 'detail','task' => $task->tasks->id),'default',true)?>"><?= $task->tasks->id ?></a>
+            <? if($task->completed_at): ?>
+              <a href="<?=$this->url(array('action' => 'detail','task' => $task->id),'default',true)?>"><?= $task->id ?></a>
             <? else: ?>
-              <?= $task->tasks->id ?>
+              <?= $task->id ?>
             <? endif; ?>
           </td>
-          <td><?= date("d.m.Y",strtotime($task->tasks->start)) ?></td>
-          <td><?= date("d.m.Y",strtotime($task->tasks->end)) ?></td>
-          <td><?= implode(', ',$task->tasks->keywords) ?></td>
-          <td><?= $task->tasks->completed_at ? 'Y' : 'N' ?></td>
+          <td><?= date("d.m.Y",strtotime($task->start)) ?></td>
+          <td><?= date("d.m.Y",strtotime($task->end)) ?></td>
+          <td><?= implode(', ',$task->keywords) ?></td>
+          <td><?= $task->completed_at ? 'Y' : 'N' ?></td>
           <td>
-            <a href="<?=$this->url(array('action' => 'delete', 'id' => $task->tasks->id),'default',true)?>"><span class="glyphicon glyphicon-trash"></span></a>
+            <a href="<?=$this->url(array('action' => 'delete', 'id' => $task->id),'default',true)?>"><span class="glyphicon glyphicon-trash"></span></a>
           </td>
         </tr>
       <?php endforeach; ?>
