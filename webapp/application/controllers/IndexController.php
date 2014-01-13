@@ -10,17 +10,14 @@ class IndexController extends Zend_Controller_Action {
 
     $rest = Zend_Registry::get("REST");
 
-    $mdlRequests = new App_Model_DbTable_Requests();
-    $requests = $mdlRequests->fetchAll();
     $tasks = array();
-    foreach ($requests as $request) {
-      $res = $rest->restGet('/api/tasks/' . $request->task_id);
-      if ($res->isSuccessful()) {
-        $tasks[] = json_decode($res->getBody());
-      }
+    $res = $rest->restGet('/api/tasks');
+    if ($res->isSuccessful()) {
+      $tasks = json_decode($res->getBody());
     }
 
-    $this->view->tasks = $tasks;
+    $this->view->tasks = $tasks->tasks;
+
 
     /*
 
@@ -93,15 +90,11 @@ class IndexController extends Zend_Controller_Action {
 
         if ($res->isSuccessful()) {
           $task = json_decode($res->getBody());
-          $mdlRequests = new App_Model_DbTable_Requests();
-          $mdlRequests->insert(array(
-              'task_id' => $task->id
-          ));
           return $this->_redirect('/');
         } else {
           Zend_Debug::dump($res->getBody());
         }
-      }else{
+      } else {
         Zend_Debug::dump("Start-Datum leigt nicht vor End-Datum.");
       }
     }
@@ -121,8 +114,6 @@ class IndexController extends Zend_Controller_Action {
               ->request('DELETE');
       if ($res->isSuccessful()) {
         $task = json_decode($res->getBody());
-        $mdlRequests = new App_Model_DbTable_Requests();
-        $mdlRequests->delete(array('task_id = ?' => $task->id));
       }
     }
     return $this->_redirect("/");
