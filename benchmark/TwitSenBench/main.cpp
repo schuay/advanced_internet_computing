@@ -9,6 +9,7 @@
 #include <iostream>
 #include <string>
 #include <array>
+#include <vector>
 #include <pthread.h>
 #include "ClassifierConfiguration.h"
 #include <unistd.h>
@@ -28,10 +29,39 @@ std::string generateSentimenFile(std::string sentimentFile, int cutOff, string b
 
     std::string outputFile("sentiments/" + benchmarkNr + "-" + to_string(cutOff) + "-" + sentimentFile);
     std::cout << "Parts for "<< outputFile << std::endl;
-    std::string command(shufPath + " -o " + outputFile + " -n $( expr $( sed -n '$=' " + sentimentFile +" ) / 4 \\* " + to_string(cutOff) + " ) " + sentimentFile);
+    std::string command(shufPath + " -o " + outputFile + " -n $( expr $( sed -n '$=' " + sentimentFile + " ) / 4 \\* " + to_string(cutOff) + " ) " + sentimentFile);
     //cout << command << endl;
     system(command.c_str());
     return outputFile;
+}
+
+std::vector<std::string> getTransformCombinations(std::array<std::string, 4> transformers, int iteration) {
+    std::vector<std::string> list;
+    std::vector<bool> v(transformers.size());
+    std::fill(v.begin() + iteration, v.end(), true);
+
+    do {
+        std::string tmp = "";
+        for (int i = 0; i < transformers.size(); ++i) {
+            if (!v[i]) {
+                if(tmp != "") {
+                    tmp = tmp + "+";
+                }
+                tmp = tmp + transformers[i];
+            }
+        }
+        list.push_back(tmp);
+    } while (std::next_permutation(v.begin(), v.end()));
+
+    if(iteration < transformers.size()) {
+        std::vector<std::string> nlist;
+        nlist = getTransformCombinations(transformers, iteration+1);
+        for(std::string s : nlist) {
+            list.push_back(s);
+        }
+    }
+
+    return list;
 }
 
 bool fileExists(string filename){
@@ -98,7 +128,10 @@ int main(int argc, const char * argv[])
 
     std::time_t benchmarkNr = std::time(0);
 
-    std::array<std::string, 4> transformers = {"id","url","user","mchar"};
+//    std::array<std::string, 4> transformers = {"id","url","user","mchar"};
+//    std::vector<std::string> transf = getTransformCombinations(transformers, 1);
+    std::array<std::string, 4> t = {"id","url","user","mchar"};
+    std::vector<std::string> transformers = getTransformCombinations(t, 1);
     std::array<std::string, 4> featureSelectors = {"aes","ae","a","as"};
     std::array<std::string, 2> classifiers = {"bayes","svm"};
     std::array<int, 4> cutOffs = {1, 2, 3, 4};
@@ -112,24 +145,27 @@ int main(int argc, const char * argv[])
         i++;
     }
 
-    std::array<ClassifierConfiguration*, transformers.size()*featureSelectors.size()*classifiers.size()*cutOffs.size()> baseConfigurations;
-    int bc = 0;
-    for(auto& transformer: transformers){
+    //std::array<ClassifierConfiguration*, transformers.size()*featureSelectors.size()*classifiers.size()*cutOffs.size()> baseConfigurations;
+    std::vector<ClassifierConfiguration*> baseConfigurations;
+    //int bc = 0;
+
+    for(auto& transformer : transformers) {
         for(auto& featureSelector : featureSelectors){
             for(auto& classifier : classifiers){
                 for(auto& cutOff : cutOffs){
                     //std::cout << "python classifier -f " << featureSelector << " -r " << transformer << " -t " << classifier << " -c " << cutOff << "\n";
-                    ClassifierConfiguration *cc = new ClassifierConfiguration(transformer, featureSelector, classifier, cutOff, to_string(benchmarkNr));
-                    cc->positivesFile = positiveFiles[cutOff];
-                    cc->negativesFile = negativeFiles[cutOff];
-                    baseConfigurations[bc++] = cc;
+
+                    ClassifierConfiguration *cc = new ClassifierConfiguration(transformer, featureSelector, classifier, 0+cutOff, to_string(benchmarkNr));
+                    cc->positivesFile = positiveFiles[cutOff-1];
+                    cc->negativesFile = negativeFiles[cutOff-1];
+                    //baseConfigurations[bc++] = cc;
+                    baseConfigurations.push_back(cc);
                 }
             }
         }
     }
 
     std::cout << "Pickles to create: " << baseConfigurations.size()  << "\n";
-//    return 0;
 
     for(auto bc : baseConfigurations){
         while (running_threads > 4) {
@@ -143,5 +179,7 @@ int main(int argc, const char * argv[])
     while(running_threads > 0){
         sleep(1);
     }
+
     return 0;
 }
+

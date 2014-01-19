@@ -28,6 +28,7 @@ string ClassifierConfiguration::getPickleName() {
 }
 
 string ClassifierConfiguration::getCommand(){
+    replaceAll(_transformer, "+", " -r ");
     return "classifier.py -p "+positivesFile+" -n "+negativesFile+" -s classifier/" + getPickleName() + " -f " + _featureSelector +  " -r " + _transformer + " -t " + _classifier;
 }
 
@@ -71,7 +72,8 @@ void ClassifierConfiguration::entryPoint(){
 void  ClassifierConfiguration::buildClassifier(){
     FILE *in;
     char buff[512];
-    string command = "python " + getCommand();
+    //string command = "python " + getCommand();
+    string command = "./" + getCommand();
 
     fstream output;
     logln("Running: " + command);
@@ -182,4 +184,15 @@ void ClassifierConfiguration::terminateThread(){
     running_threads--;
     pthread_mutex_unlock(&running_mutex);
     logln("Thread ended! Still running: " + to_string(running_threads));
+}
+
+// http://stackoverflow.com/questions/3418231/replace-part-of-a-string-with-another-string
+void ClassifierConfiguration::replaceAll(string& str, const string& from, const string& to) {
+    if(from.empty())
+        return;
+    size_t start_pos = 0;
+    while((start_pos = str.find(from, start_pos)) != string::npos) {
+        str.replace(start_pos, from.length(), to);
+        start_pos += to.length();
+    }
 }

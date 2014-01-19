@@ -43,6 +43,7 @@ private:
     void log(string);
     void logln(string);
     double stringToDouble(const string&);
+    void replaceAll(string&, const string&, const string&);
 
 public:
     ClassifierConfiguration(){};
