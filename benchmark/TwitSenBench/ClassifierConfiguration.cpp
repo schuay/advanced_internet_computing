@@ -28,8 +28,16 @@ string ClassifierConfiguration::getPickleName() {
 }
 
 string ClassifierConfiguration::getCommand(){
+    string cutOffPercentage = "0.5";
+    if(_cutOff == 3) {
+        cutOffPercentage = "0.66";
+    }
+    else if(_cutOff == 4) {
+        cutOffPercentage = "0.75";
+    }
+
     replaceAll(_transformer, "+", " -r ");
-    return "classifier.py -p "+positivesFile+" -n "+negativesFile+" -s classifier/" + getPickleName() + " -f " + _featureSelector +  " -r " + _transformer + " -t " + _classifier;
+    return "classifier.py -p "+positivesFile+" -n "+negativesFile+" -s classifier/" + getPickleName() + " -f " + _featureSelector +  " -r " + _transformer + " -t " + _classifier + " -c " + cutOffPercentage;
 }
 
 void ClassifierConfiguration::start(){

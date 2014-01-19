@@ -134,9 +134,9 @@ int main(int argc, const char * argv[])
     std::vector<std::string> transformers = getTransformCombinations(t, 1);
     std::array<std::string, 4> featureSelectors = {"aes","ae","a","as"};
     std::array<std::string, 2> classifiers = {"bayes","svm"};
-    std::array<int, 4> cutOffs = {1, 2, 3, 4};
-    std::array<string, 4> negativeFiles;
-    std::array<string, 4> positiveFiles;
+    std::array<int, 3> cutOffs = {2, 3, 4};
+    std::array<string, 3> negativeFiles;
+    std::array<string, 3> positiveFiles;
 
     int i = 0;
     for(auto& cutOff : cutOffs){
@@ -156,8 +156,8 @@ int main(int argc, const char * argv[])
                     //std::cout << "python classifier -f " << featureSelector << " -r " << transformer << " -t " << classifier << " -c " << cutOff << "\n";
 
                     ClassifierConfiguration *cc = new ClassifierConfiguration(transformer, featureSelector, classifier, 0+cutOff, to_string(benchmarkNr));
-                    cc->positivesFile = positiveFiles[cutOff-1];
-                    cc->negativesFile = negativeFiles[cutOff-1];
+                    cc->positivesFile = positiveFiles[cutOff-2]; // -2 weil der cutoff mit 2 beginnt
+                    cc->negativesFile = negativeFiles[cutOff-2];
                     //baseConfigurations[bc++] = cc;
                     baseConfigurations.push_back(cc);
                 }
