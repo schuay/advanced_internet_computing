@@ -7,3 +7,7 @@
 //
 
 #include "ClassifierOutput.h"
+
+int ClassifierOutput::getDuration(){
+    return stopTime - startTime;
+}

@@ -22,8 +22,8 @@ using namespace std;
 class ClassifierConfiguration {
 
 private:
-    time_t _begin;
-    time_t _end;
+    //time_t _begin;
+    //time_t _end;
     string _transformer;
     string _classifier;
     string _featureSelector;
@@ -45,6 +45,7 @@ private:
     void log(string);
     void logln(string);
     double stringToDouble(const string&);
+    int stringToInt(const string&);
     void replaceAll(string&, const string&, const string&);
 
 public:

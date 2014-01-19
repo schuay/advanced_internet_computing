@@ -62,13 +62,13 @@ void *ClassifierConfiguration::staticEntryPoint(void *c){
 
 void ClassifierConfiguration::entryPoint(){
 
-    _begin = time(0);
+    //_begin = time(0);
     if(!fileExists(outputFilename)){
         buildClassifier();
     }else{
         logln("Output already exists: " + outputFilename);
     }
-    _end = time(0);
+    //_end = time(0);
 
     ClassifierOutput *clOut = handleOutput();
 
@@ -93,15 +93,19 @@ void  ClassifierConfiguration::buildClassifier(){
         return;
     }
 
-    output.open(outputFilename.c_str(), fstream::out);
+    string incompleteFN(outputFilename + ".incomplete");
 
+    output.open(incompleteFN.c_str(), fstream::out);
+    output << "start time: " << time(0) << endl;
     while(fgets(buff, sizeof(buff), in)!=NULL){
         output << buff;
         log(buff);
     }
     pclose(in);
-
+    output << "stop time: " << time(0) << endl;
     output.close();
+
+    rename(incompleteFN.c_str(), outputFilename.c_str());
 
     remove(string("classifier/"+getPickleName()).c_str());
 
@@ -117,6 +121,9 @@ ClassifierOutput* ClassifierConfiguration::handleOutput(){
     std::regex rxPosRecall("pos recall: (.*)");
     std::regex rxNegPrecision("neg precision: (.*)");
     std::regex rxNegRecall("neg recall: (.*)");
+
+    std::regex rxStartTime("start time: (.*)");
+    std::regex rxStopTime("stop time: (.*)");
 
     ifstream input(outputFilename);
     std::string line;
@@ -136,6 +143,13 @@ ClassifierOutput* ClassifierConfiguration::handleOutput(){
         }
         if(regex_search(line.c_str(), res, rxPosRecall)){
             co->posRecall = stringToDouble(res[1]);
+        }
+
+        if(regex_search(line.c_str(), res, rxStartTime)){
+            co->startTime = stringToInt(res[1]);
+        }
+        if(regex_search(line.c_str(), res, rxStopTime)){
+            co->stopTime = stringToInt(res[1]);
         }
     }
 
@@ -161,7 +175,8 @@ void ClassifierConfiguration::writeToCSV(ClassifierOutput *clOutput){
     else if(_cutOff == 4) {
         cutOffRatio = "3:1";
     }
-    output << benchmarkNr << ";" << getClassifier() << ";" << getTransformer() << ";" << getFeatureSelector() << ";" << cutOffRatio << ";" << clOutput->accuracy << ";" << clOutput->posPrecision << ";" << clOutput->posRecall << ";" << clOutput->negPrecision << ";" << clOutput->negRecall << ";" << (_end - _begin) << endl;
+    //output << benchmarkNr << ";" << getClassifier() << ";" << getTransformer() << ";" << getFeatureSelector() << ";" << cutOffRatio << ";" << clOutput->accuracy << ";" << clOutput->posPrecision << ";" << clOutput->posRecall << ";" << clOutput->negPrecision << ";" << clOutput->negRecall << ";" << (_end - _begin) << endl;
+    output << benchmarkNr << ";" << getClassifier() << ";" << getTransformer() << ";" << getFeatureSelector() << ";" << cutOffRatio << ";" << clOutput->accuracy << ";" << clOutput->posPrecision << ";" << clOutput->posRecall << ";" << clOutput->negPrecision << ";" << clOutput->negRecall << ";" << clOutput->getDuration() << endl;
     output.close();
     pthread_mutex_unlock(&csv_mutex);
 }
@@ -174,6 +189,14 @@ double ClassifierConfiguration::stringToDouble(const string& value){
     double x;
     if(!(i >> x))
         return .0;
+    return x;
+}
+
+int ClassifierConfiguration::stringToInt(const string& value){
+    std::istringstream i(value);
+    int x;
+    if(!(i >> x))
+        return 0;
     return x;
 }
 

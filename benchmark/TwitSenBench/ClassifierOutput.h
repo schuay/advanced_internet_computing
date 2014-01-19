@@ -23,6 +23,11 @@ public:
     double negPrecision = .0;
     double posRecall = .0;
     double negRecall = .0;
+    int startTime = 0;
+    int stopTime = 0;
+
+    int getDuration();
+
 };
 
 #endif /* defined(__TwitSenBench__ClassifierOutput__) */
