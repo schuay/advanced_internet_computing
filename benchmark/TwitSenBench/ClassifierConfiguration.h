@@ -22,6 +22,8 @@ using namespace std;
 class ClassifierConfiguration {
 
 private:
+    time_t _begin;
+    time_t _end;
     string _transformer;
     string _classifier;
     string _featureSelector;

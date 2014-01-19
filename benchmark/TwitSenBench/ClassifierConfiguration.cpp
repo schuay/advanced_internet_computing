@@ -62,11 +62,13 @@ void *ClassifierConfiguration::staticEntryPoint(void *c){
 
 void ClassifierConfiguration::entryPoint(){
 
+    _begin = time(0);
     if(!fileExists(outputFilename)){
         buildClassifier();
     }else{
         logln("Output already exists: " + outputFilename);
     }
+    _end = time(0);
 
     ClassifierOutput *clOut = handleOutput();
 
@@ -147,8 +149,19 @@ void ClassifierConfiguration::writeToCSV(ClassifierOutput *clOutput){
 
     string csvFilename("classifier-benchmark.csv");
     pthread_mutex_lock(&csv_mutex);
+    bool printHeader = !fileExists(csvFilename);
     ofstream output(csvFilename, fstream::app);
-    output << benchmarkNr << ";" << getClassifier() << ";" << getTransformer() << ";" << getFeatureSelector() << ";" << _cutOff << ";" << clOutput->accuracy << ";" << clOutput->posPrecision << ";" << clOutput->posRecall << ";" << clOutput->negPrecision << ";" << clOutput->negRecall << endl;
+    if(printHeader) {
+        output << "Nr.;Classifier;Transformers;Feature Selector;Trainingset/Testset Ratio;Accuracy;Precision (Positive);Recall (Positive);Precision (Negative);Recall (Negative);Duration (sec)" << endl;
+    }
+    string cutOffRatio = "1:1";
+    if(_cutOff == 3) {
+        cutOffRatio = "2:1";
+    }
+    else if(_cutOff == 4) {
+        cutOffRatio = "3:1";
+    }
+    output << benchmarkNr << ";" << getClassifier() << ";" << getTransformer() << ";" << getFeatureSelector() << ";" << cutOffRatio << ";" << clOutput->accuracy << ";" << clOutput->posPrecision << ";" << clOutput->posRecall << ";" << clOutput->negPrecision << ";" << clOutput->negRecall << ";" << (_end - _begin) << endl;
     output.close();
     pthread_mutex_unlock(&csv_mutex);
 }
