@@ -1,0 +1,57 @@
+----------------------------
+Suggested base papers
+----------------------------
+
+Efthymios Kouloumpis, Theresa Wilson, and Johanna Moore. Twitter sentiment analysis: The
+good the bad and the omg! In Lada A. Adamic, Ricardo A. Baeza-Yates, and Scott Counts,
+editors, ICWSM. The AAAI Press.
+
+	---> describing different data sets, selection of features for a specific example
+
+Bo Pang and Lillian Lee. Opinion mining and sentiment analysis. Found. Trends Inf. Retr.,
+2(1-2):1{135, January 2008.
+
+	---> Basics - why is SA required, typical problems/challenges
+
+
+Qiang Ye, Ziqiong Zhang, and Rob Law. Sentiment classification of online reviews to travel
+destinations by supervised machine learning approaches. Expert Syst. Appl., 36(3):6527{6535,
+April 2009.
+
+	---> Explains Naives Bayes, SVM, N-gram based character language model and compares results for a specific example
+
+
+
+----------------------------
+Other literature
+----------------------------
+
+Liu, Bing. "Sentiment analysis and subjectivity." Handbook of natural language processing 2 (2010): 568.
+	---> describes the basics of SA very detailed and deals with the problems, different approaches
+
+
+Ting, S. L., W. H. Ip, and Albert HC Tsang. "Is Naïve Bayes a Good Classifier for Document Classification?." International Journal of Software Engineering and Its Applications 5.3 (2011): 37-46.
+	---> compares different machine learning algorithms for SA, explains preprocessing phases/feature selection
+
+
+Bollen, Johan, Huina Mao, and Alberto Pepe. "Modeling public mood and emotion: Twitter sentiment and socio-economic phenomena." ICWSM. 2011.
+	---> a twitter sentiment analysis of specific events between august 1 and december 20, 2008
+
+
+Pak, Alexander, and Patrick Paroubek. "Twitter as a Corpus for Sentiment Analysis and Opinion Mining." LREC. 2010.
+	---> describes how to create a corpus
+
+
+Agarwal, Apoorv, et al. "Sentiment analysis of twitter data." Proceedings of the Workshop on Languages in Social Media. Association for Computational Linguistics, 2011.
+	---> contains a description of twitter data and the respective consequences (emoticons, hashtags, targets, acronyms, spelling mistakes)
+	strategies for pre-processing; compares different models
+
+
+Go, Alec, Richa Bhayani, and Lei Huang. "Twitter sentiment classification using distant supervision." CS224N Project Report, Stanford (2009): 1-12.
+	---> characteristics of tweets; approach to cut off emoticons; repeated letters (more than 2) are replaced
+
+
+Read, Jonathon. "Using emoticons to reduce dependency in machine learning techniques for sentiment classification." Proceedings of the ACL Student Research Workshop. Association for Computational Linguistics, 2005.
+	---> topic-dependent, domain-dependent and temporally-dependent meaning of words
+	using emoticons
+	noisy data
