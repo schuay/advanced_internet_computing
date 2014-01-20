@@ -1,0 +1,19 @@
+Introduction
+	- Motivation
+		* what is sentiment analysis/opinion mining
+		* why is it required, who needs it)
+		* how can sentiment be analysed (machine learning, natural language processing)
+
+Sentiment analysis and Twitter
+	- Microblogging and Twitter
+		* Twitter as a popular resource, maybe some words about Twitter API
+		* special problems with sentiments (e.g. overall sentiment of a tweet, topic dependency, emoticons, abbreviations, spelling mistakes, spam)
+
+Popular Sentiment Analysis Techniques
+	- Machine Learning: SVM and Naive Bayes
+		* corpus
+		* preprocessing
+		* feature selection (unigrams, n-grams, emoticons, hashtags, etc.)
+
+	- Performance Evaluation
+		* Recall, Accuracy etc.
