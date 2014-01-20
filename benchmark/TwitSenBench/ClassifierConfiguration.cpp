@@ -36,8 +36,8 @@ string ClassifierConfiguration::getCommand(){
         cutOffPercentage = "0.75";
     }
 
-    replaceAll(_transformer, "+", " -r ");
-    return "classifier.py -p "+positivesFile+" -n "+negativesFile+" -s classifier/" + getPickleName() + " -f " + _featureSelector +  " -r " + _transformer + " -t " + _classifier + " -c " + cutOffPercentage;
+    string tmpTransformers = replaceAll2(_transformer, "+", " -r "); //replaceAll(_transformer, "+", " -r ");
+    return "classifier.py -p "+positivesFile+" -n "+negativesFile+" -s classifier/" + getPickleName() + " -f " + _featureSelector +  " -r " + tmpTransformers + " -t " + _classifier + " -c " + cutOffPercentage;
 }
 
 void ClassifierConfiguration::start(){
@@ -48,9 +48,11 @@ void ClassifierConfiguration::start(){
     running_threads++;
     pthread_mutex_unlock(&running_mutex);
 
+    _threadNum = running_threads;
+
     logln("Thread started.");
 
-    _threadNum = running_threads;
+
 
     pthread_create(&_thread, NULL, ClassifierConfiguration::staticEntryPoint, this);
 }
@@ -239,4 +241,14 @@ void ClassifierConfiguration::replaceAll(string& str, const string& from, const 
         str.replace(start_pos, from.length(), to);
         start_pos += to.length();
     }
+}
+string ClassifierConfiguration::replaceAll2(string str, const string& from, const string& to) {
+    if(from.empty())
+        return string("");
+    size_t start_pos = 0;
+    while((start_pos = str.find(from, start_pos)) != string::npos) {
+        str.replace(start_pos, from.length(), to);
+        start_pos += to.length();
+    }
+    return str;
 }

@@ -47,6 +47,7 @@ private:
     double stringToDouble(const string&);
     int stringToInt(const string&);
     void replaceAll(string&, const string&, const string&);
+    string replaceAll2(string, const string&, const string&);
 
 public:
     ClassifierConfiguration(){};

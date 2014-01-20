@@ -110,7 +110,7 @@ int main(int argc, const char * argv[])
     std::cout << "Pickles to create: " << baseConfigurations.size()  << endl;
 
     for(auto bc : baseConfigurations){
-        while (running_threads > 1) {
+        while (running_threads > 3) {
             sleep(1);
         }
         bc->start();
