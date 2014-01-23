@@ -57,7 +57,7 @@ class StopWordFilter(FeatureSelectionI):
     def select_features(self, obj):
         fs = self.__selection.select_features(obj);
         return {f: m for f, m in fs.iteritems()
-                if (isinstance(f, basestring) and f.lower() not in self.__stopset)}
+                if (not isinstance(f, basestring) or f.lower() not in self.__stopset)}
 
     @staticmethod
     def __stopset():
