@@ -4,10 +4,28 @@ import re
 import tweet
 
 from nltk.corpus import stopwords
+from nltk.util import ngrams
 
 class FeatureSelectionI:
     def select_features(self, obj):
         raise NotImplementedError("Please implement this yourself.")
+
+"""Takes the features returned by the original selection and adds all i-grams where 1 < i <= n."""
+class NGram(FeatureSelectionI):
+    def __init__(self, selection, n):
+        self.__selection = selection
+        self.__n = n
+
+    def select_features(self, obj):
+        features = self.__selection.select_features(obj)
+
+        unigrams = [u for u,x in features.iteritems()]
+
+        for i in range(2,self.__n+1):
+            igrams = ngrams(unigrams, i)
+            features.update(dict([(ig, True) for ig in igrams]))
+
+        return features
 
 class AllWords(FeatureSelectionI):
     @staticmethod
