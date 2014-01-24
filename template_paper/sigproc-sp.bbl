@@ -1,5 +1,12 @@
 \begin{thebibliography}{1}
 
+\bibitem{agarwal2011sentiment}
+A.~Agarwal, B.~Xie, I.~Vovsha, O.~Rambow, and R.~Passonneau.
+\newblock Sentiment analysis of twitter data.
+\newblock In {\em Proceedings of the Workshop on Languages in Social Media},
+  LSM '11, pages 30--38, Stroudsburg, PA, USA, 2011. Association for
+  Computational Linguistics.
+
 \bibitem{liu2010sentimentanalysis}
 B.~Liu.
 \newblock Sentiment analysis and subjectivity.
@@ -11,5 +18,13 @@ B.~Pang and L.~Lee.
 \newblock Opinion mining and sentiment analysis.
 \newblock {\em Foundations and trends in information retrieval}, 2(1-2):1--135,
   2008.
+
+\bibitem{read2005using}
+J.~Read.
+\newblock Using emoticons to reduce dependency in machine learning techniques
+  for sentiment classification.
+\newblock In {\em Proceedings of the ACL Student Research Workshop}, ACLstudent
+  '05, pages 43--48, Stroudsburg, PA, USA, 2005. Association for Computational
+  Linguistics.
 
 \end{thebibliography}

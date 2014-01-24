@@ -107,20 +107,49 @@ email: {\texttt{jsmith@affiliation.org}}) and Julius P.~Kumquat
 
 \maketitle
 \begin{abstract}
-Sentiment analysis has become very popular in recent years and especially Twitter provides a lot of data to a huge amount of topics which can be processed and classified to provide an overall opinion. However, classification of Twitter-based data is somehow different to traditional text mining and introduce some additional challenges. In this paper typical problems are discussed that go along with classification of tweets. We will also shortly discuss two popular machine learning algorithms for sentiment analysis and explain how a classifiers are evaluated.
+Sentiment analysis has become very popular in recent years and especially Twitter provides a lot of data to a huge amount of topics which can be processed and classified to provide an overall opinion. However, classification of Twitter-based data is somehow different to traditional text mining and introduce some additional challenges. In this paper typical problems are discussed that go along with classification of tweets. We will also shortly discuss two popular machine learning algorithms (Naives Bayes and SVM) for sentiment analysis and explain how a classifiers are evaluated.
 
 \end{abstract}
 
 
 
 \section{Introduction}
-The general opinion about a specific product or service has certainly a great influence on its reputation. People often want to know what others think about a special product they are going to buy, about a new movie, or about a hotel they are going to book. But also companies may interested in its customers' opinions. The world wide web provides many ways for people to distribute their experiences and sentiments. Machine learning algorithms make it easier to process and evaluate those sentiments and are therefore able to provide an overall opinion to a certain topic. This kind of analyzing is called sentiment analysis or opinion mining \cite{liu2010sentimentanalysis, pang2008opinion}. Clearly, there are some challenges when assessing the opinion of people, especially when classifying microblogging services like Twitter. The underlying paper gives an overview about different sentiment analysis approaches and outlines special problems related to the classification of microblogging services.
+The general opinion about a specific product or service has certainly a great influence on its reputation. People often want to know what others think about a special product they are willing to buy, about a new movie, or about a hotel they are going to book. But also companies may interested in its customers' opinions. The world wide web provides many ways for people to distribute their experiences and sentiments. Machine learning algorithms make it easier to process and evaluate those sentiments and are therefore able to provide an overall opinion to a certain topic. This kind of analyzing is called sentiment analysis or opinion mining \cite{liu2010sentimentanalysis, pang2008opinion}. Clearly, there are some challenges when assessing the opinion of people, especially when classifying microblogging services like Twitter. The underlying paper gives an overview about different sentiment analysis approaches and outlines special problems related to the classification of microblogging services. These challenges are discussed in section~\ref{analyzingdata}.
 
 
+\section{Analyzing Data} \label{analyzingdata}
+The analyzing process of text and the classification whether its content is rather positive, negative or may be considered as neutral, is the core functionality in sentiment analysis. We are going to discuss general considerations of classifying data first of all, before outlining additional challenges related to Twitter-based data.
 
-\section{Sentiment analysis of tweets}
+\subsection{Text Mining vs. Sentiment Analysis}
+One would assume, that text mining and sentiment analysis are very similar. Text mining e.g. may deal with classifying documents by topic, which represents one of the easier tasks. Topic-based text classification tries to match a text into a category like sport, politics etc. and therefore topic-related words are identified to classify a text. However, sentiment analysis requires to focus on typical "sentiment words" for example hate, love, like, regret.
+When it comes to identify the overall sentiment of a text it turns out that it may contains several aspects (e.g. negative and positiver remarks) or may not even contain any "signal words" (e.g. terrible, awful, bad) but still has a negative meaning.
+To underline this problem, here are some examples:
+
+"My new smartphone is really cool, the display is just gorgeous. The battery life is really bad, however."
+
+"TODO"
+
+Obviously, this hardens the task of sentiment analysis. Moreover,it is hard to teach a machine patterns like sarcasm and to identify the intended meaning behind words.
+\cite{liu2010sentimentanalysis,pang2008opinion}
+Another crucial point are dependencies of sentiments: topic, domain, and temporal dependency. Those mainly focus on the problem, that sentiments can have a different meaning, depending on the underlying topic or domain. E.g. a word such as "unpredictable" may have a positive meaning if it used for movie review, but could have a negative sentiment if it used to describe the behavior of a car. Temporal dependency deals with training a classifier with data from a certain time-period and use this classifier for data of another time-period. This may may have an influence on the accuracy of classification as well. \cite{read2005using}
+
+\subsection{Twitter-based Data}
+Twitter is a form of microblog, where users can post small text immediately and the so called tweets are contain real-time reactions to certain events. The social network platform is categorized as microblog as every tweet is limited to 140 signs. This results in people using e.g. abbreviations, emoticons, (intentional) spelling mistakes in order to fit and express their opinion accurate. Moreover, Twitter uses some special characters like the \emph{@} which indicates that the post directed to another user. In addition hashtags are used to refer to special topic. All these special characteristics play a huge role when analyzing tweets. \cite{agarwal2011sentiment, read2005using}
 
 
+\section{Classifying Tweets}
+In this section we will focus on how to conduct sentiment analysis for tweets and suggested approaches.
+
+\subsection{Corpus}
+The corpus is the starting point of each sentiment analyses. It contains the data that will be used to train a classifier.
+
+\subsection{Preprocessing}
+
+\subsection{Training Classifier}
+
+\subsection{Evaluate Classifier}
+
+\section{Related Work}
 
 
 \section{Conclusion}

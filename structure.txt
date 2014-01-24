@@ -10,6 +10,7 @@ Sentiment analysis and Twitter
 		* special problems with sentiments (e.g. overall sentiment of a tweet, topic dependency, emoticons, abbreviations, spelling mistakes, spam)
 
 Popular Sentiment Analysis Techniques
+	- supervised, unsupervised, (predefined opinion lexikon?)
 	- Machine Learning: SVM and Naive Bayes
 		* corpus
 		* preprocessing
