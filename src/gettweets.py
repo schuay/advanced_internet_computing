@@ -29,13 +29,12 @@ def signal_handler(signal, frame):
 class MyStreamer(TwythonStreamer):
     """In addition to initializing the TwythonStreamer class, sets our tweet store
        so we can persist retrieved tweets."""
-    def __init__(self, app_key, app_secret, oauth_token, oauth_token_secret, store, parent, search_to, search_from):
+    def __init__(self, app_key, app_secret, oauth_token, oauth_token_secret, store, parent, search_to):
         super(MyStreamer, self).__init__(app_key, app_secret, oauth_token, oauth_token_secret)
         self._buffer = []
         self._parent = parent
         self._store = store
         self._search_to = search_to
-        self._search_from = search_from
 
     def on_success(self, data):
         t = tweet.to_date(data)
@@ -43,9 +42,6 @@ class MyStreamer(TwythonStreamer):
         if t[tweet.CREATED_AT] > self._search_to:
             self.flush()
             self.disconnect()
-            return
-
-        if t[tweet.CREATED_AT] < self._search_from:
             return
 
         self._buffer.append(t)
@@ -116,8 +112,7 @@ class TweetFetcher():
 
                 # Filter by date.
                 tweets = map(tweet.to_date, tweets)
-                tweets = [t for t in tweets if self._search_from <= t[tweet.CREATED_AT]
-                                           and self._search_to   >= t[tweet.CREATED_AT]]
+                tweets = [t for t in tweets if self._search_from <= t[tweet.CREATED_AT]]
 
                 if len(tweets) == 0:
                     break
@@ -144,8 +139,7 @@ class TweetFetcher():
                             self._credentials['TOKEN_SECRET'],
                             self._store,
                             self,
-                            self._search_to,
-                            self._search_from)
+                            self._search_to)
         self._stream.statuses.filter(language = 'en',
                                      track = self._search_kw)
 
