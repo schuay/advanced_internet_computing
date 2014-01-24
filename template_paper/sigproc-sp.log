@@ -1,4 +1,4 @@
-This is pdfTeX, Version 3.1415926-2.4-1.40.13 (MiKTeX 2.9 64-bit) (preloaded format=pdflatex 2013.10.12)  24 JAN 2014 14:06
+This is pdfTeX, Version 3.1415926-2.4-1.40.13 (MiKTeX 2.9 64-bit) (preloaded format=pdflatex 2013.10.12)  24 JAN 2014 14:13
 entering extended mode
 **sigproc-sp.tex
 
@@ -244,10 +244,7 @@ Overfull \hbox (3.61449pt too wide) in paragraph at lines 110--111
 itter-
  []
 
-
-Underfull \vbox (badness 6016) has occurred while \output is active []
-
- [1{C:/ProgramData/MiKTeX/2.9/pdftex/config/pdftex.map}
+[1{C:/ProgramData/MiKTeX/2.9/pdftex/config/pdftex.map}
 
 
 ]
@@ -258,22 +255,23 @@ g\template_paper\sigproc-sp.bbl") [2
 ("C:\Users\Soey\Documents\TU\9. Semester\aic-project\advanced_internet_computin
 g\template_paper\sigproc-sp.aux") )
 Here is how much of TeX's memory you used:
- 2412 strings out of 493921
- 29342 string characters out of 3144878
+ 2414 strings out of 493921
+ 29360 string characters out of 3144878
  86038 words of memory out of 3000000
- 5677 multiletter control sequences out of 15000+200000
- 43013 words of font info for 57 fonts, out of 3000000 for 9000
+ 5678 multiletter control sequences out of 15000+200000
+ 44546 words of font info for 58 fonts, out of 3000000 for 9000
  841 hyphenation exceptions out of 8191
  41i,10n,28p,1112b,244s stack positions out of 5000i,500n,10000p,200000b,50000s
 {C:/Program Files/MiKTeX 2.9/fonts/enc/dvips
 /fontname/8r.enc}<C:/Program Files/MiKTeX 2.9/fonts/type1/public/amsfonts/cm/cm
-r9.pfb><C:/Program Files/MiKTeX 2.9/fonts/type1/public/amsfonts/cm/cmti9.pfb><C
-:/Program Files/MiKTeX 2.9/fonts/type1/urw/helvetic/uhvb8a.pfb><C:/Program File
-s/MiKTeX 2.9/fonts/type1/urw/helvetic/uhvr8a.pfb><C:/Program Files/MiKTeX 2.9/f
-onts/type1/urw/times/utmb8a.pfb>
-Output written on sigproc-sp.pdf (2 pages, 76898 bytes).
+r9.pfb><C:/Program Files/MiKTeX 2.9/fonts/type1/public/amsfonts/cm/cmsl9.pfb><C
+:/Program Files/MiKTeX 2.9/fonts/type1/public/amsfonts/cm/cmti9.pfb><C:/Program
+ Files/MiKTeX 2.9/fonts/type1/urw/helvetic/uhvb8a.pfb><C:/Program Files/MiKTeX
+2.9/fonts/type1/urw/helvetic/uhvr8a.pfb><C:/Program Files/MiKTeX 2.9/fonts/type
+1/urw/times/utmb8a.pfb>
+Output written on sigproc-sp.pdf (2 pages, 91068 bytes).
 PDF statistics:
- 30 PDF objects out of 1000 (max. 8388607)
+ 34 PDF objects out of 1000 (max. 8388607)
  0 named destinations out of 1000 (max. 500000)
  1 words of extra memory for PDF output out of 10000 (max. 10000000)
 

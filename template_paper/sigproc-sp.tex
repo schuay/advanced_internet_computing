@@ -125,25 +125,32 @@ One would assume, that text mining and sentiment analysis are very similar. Text
 When it comes to identify the overall sentiment of a text it turns out that it may contains several aspects (e.g. negative and positiver remarks) or may not even contain any "signal words" (e.g. terrible, awful, bad) but still has a negative meaning.
 To underline this problem, here are some examples:
 
-"My new smartphone is really cool, the display is just gorgeous. The battery life is really bad, however."
+\textit{"My new smartphone is really cool, the display is just gorgeous. The battery life is really bad, however."}
 
-"TODO"
+\textsl{"Oh, of course - I have a lot of time. Just keep on using my money for paying those really fast and friendly authorities."}
 
 Obviously, this hardens the task of sentiment analysis. Moreover,it is hard to teach a machine patterns like sarcasm and to identify the intended meaning behind words.
 \cite{liu2010sentimentanalysis,pang2008opinion}
+
+
 Another crucial point are dependencies of sentiments: topic, domain, and temporal dependency. Those mainly focus on the problem, that sentiments can have a different meaning, depending on the underlying topic or domain. E.g. a word such as "unpredictable" may have a positive meaning if it used for movie review, but could have a negative sentiment if it used to describe the behavior of a car. Temporal dependency deals with training a classifier with data from a certain time-period and use this classifier for data of another time-period. This may may have an influence on the accuracy of classification as well. \cite{read2005using}
 
 \subsection{Twitter-based Data}
 Twitter is a form of microblog, where users can post small text immediately and the so called tweets are contain real-time reactions to certain events. The social network platform is categorized as microblog as every tweet is limited to 140 signs. This results in people using e.g. abbreviations, emoticons, (intentional) spelling mistakes in order to fit and express their opinion accurate. Moreover, Twitter uses some special characters like the \emph{@} which indicates that the post directed to another user. In addition hashtags are used to refer to special topic. All these special characteristics play a huge role when analyzing tweets. \cite{agarwal2011sentiment, read2005using}
 
 
-\section{Classifying Tweets}
+\section{Twitter API}
+
+\section{Preprocessing Tweets}
 In this section we will focus on how to conduct sentiment analysis for tweets and suggested approaches.
+
+
+
+\section{Classifying Tweets}
 
 \subsection{Corpus}
 The corpus is the starting point of each sentiment analyses. It contains the data that will be used to train a classifier.
 
-\subsection{Preprocessing}
 
 \subsection{Training Classifier}
 
