@@ -27,7 +27,7 @@
 % For tracking purposes - this is V3.1SP - APRIL 2009
 
 \documentclass{acm_proc_article-sp}
-
+\usepackage{url}
 \begin{document}
 
 \title{Twitter-based Sentiment Analysis}
@@ -97,10 +97,7 @@
 % author on the opening page (as the 'third row') but we ask,
 % for aesthetic reasons that you place these 'additional authors'
 % in the \additional authors block, viz.
-\additionalauthors{Additional authors: John Smith (The Th{\o}rv{\"a}ld Group,
-email: {\texttt{jsmith@affiliation.org}}) and Julius P.~Kumquat
-(The Kumquat Consortium, email: {\texttt{jpkumquat@consortium.net}}).}
-\date{30 July 1999}
+
 % Just remember to make sure that the TOTAL number of authors
 % is the number that will appear on the first page PLUS the
 % number that will appear in the \additionalauthors section.
@@ -114,7 +111,8 @@ Sentiment analysis has become very popular in recent years and especially Twitte
 
 
 \section{Introduction}
-The general opinion about a specific product or service has certainly a great influence on its reputation. People often want to know what others think about a special product they are willing to buy, about a new movie, or about a hotel they are going to book. But also companies may interested in its customers' opinions. The world wide web provides many ways for people to distribute their experiences and sentiments. Machine learning algorithms make it easier to process and evaluate those sentiments and are therefore able to provide an overall opinion to a certain topic. This kind of analyzing is called sentiment analysis or opinion mining \cite{liu2010sentimentanalysis, pang2008opinion}. Clearly, there are some challenges when assessing the opinion of people, especially when classifying microblogging services like Twitter. The underlying paper gives an overview about different sentiment analysis approaches and outlines special problems related to the classification of microblogging services. These challenges are discussed in section~\ref{analyzingdata}.
+The general opinion about a specific product or service has certainly a great influence on its reputation. People often want to know what others think about a special product they are willing to buy, about a new movie, or about a hotel they are going to book. But also companies may interested in its customers' opinions, politicians may wish to receive feedback, or social organizations may have interest in an ongoing debate. \cite{pak2010twitter}.
+The world wide web provides many ways for people to distribute their experiences and sentiments. Machine learning algorithms make it easier to process and evaluate those sentiments and are therefore able to provide an overall opinion to a certain topic. This kind of analyzing is called sentiment analysis or opinion mining \cite{liu2010sentimentanalysis, pang2008opinion}. Clearly, there are some challenges when assessing the opinion of people, especially when classifying microblogging services like Twitter \footnote{\url{http://twitter.com}}. The underlying paper gives an overview about different sentiment analysis approaches and outlines special problems related to the classification of microblogging services. These challenges are discussed in section~\ref{analyzingdata}. Section~\ref{twitterapi} gives some basic information about the Twitter API. In section~\ref{preprocessing} and \ref{classification} it is describes approaches of preprocessing and classifying tweets. In section~\ref{related} some related work is introduced and section~\ref{conclusion} concludes the paper.
 
 
 \section{Analyzing Data} \label{analyzingdata}
@@ -139,27 +137,29 @@ Another crucial point are dependencies of sentiments: topic, domain, and tempora
 Twitter is a form of microblog, where users can post small text immediately and the so called tweets are contain real-time reactions to certain events. The social network platform is categorized as microblog as every tweet is limited to 140 signs. This results in people using e.g. abbreviations, emoticons, (intentional) spelling mistakes in order to fit and express their opinion accurate. Moreover, Twitter uses some special characters like the \emph{@} which indicates that the post directed to another user. In addition hashtags are used to refer to special topic. All these special characteristics play a huge role when analyzing tweets. \cite{agarwal2011sentiment, read2005using}
 
 
-\section{Twitter API}
+\section{Twitter API} \label{twitterapi}
+Tweets has become to a popular resource for sentiment analysis, as Twitter provides an API to retrieve tweets and therefore makes the collection of data easy.
 
-\section{Preprocessing Tweets}
+
+\section{Preprocessing Tweets} \label{preprocessing}
 In this section we will focus on how to conduct sentiment analysis for tweets and suggested approaches.
 
 
 
-\section{Classifying Tweets}
+\section{Classifying Tweets} \label{classification}
 
 \subsection{Corpus}
-The corpus is the starting point of each sentiment analyses. It contains the data that will be used to train a classifier.
+The corpus is the starting point of each sentiment analyses. It contains the data the will be used to train a classifier.
 
 
 \subsection{Training Classifier}
 
 \subsection{Evaluate Classifier}
 
-\section{Related Work}
+\section{Related Work} \label{related}
 
 
-\section{Conclusion}
+\section{Conclusion} \label{conclusion}
 
 %\end{document}  % This is where a 'short' article might terminate
 

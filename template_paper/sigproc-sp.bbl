@@ -13,6 +13,15 @@ B.~Liu.
 \newblock In {\em Handbook of Natural Language Processing, Second Edition.
   Taylor and Francis Group, Boca}, 2010.
 
+\bibitem{pak2010twitter}
+A.~Pak and P.~Paroubek.
+\newblock Twitter as a corpus for sentiment analysis and opinion mining.
+\newblock In N.~C.~C. Chair), K.~Choukri, B.~Maegaard, J.~Mariani, J.~Odijk,
+  S.~Piperidis, M.~Rosner, and D.~Tapias, editors, {\em Proceedings of the
+  Seventh International Conference on Language Resources and Evaluation
+  (LREC'10)}, Valletta, Malta, may 2010. European Language Resources
+  Association (ELRA).
+
 \bibitem{pang2008opinion}
 B.~Pang and L.~Lee.
 \newblock Opinion mining and sentiment analysis.
