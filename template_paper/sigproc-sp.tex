@@ -140,7 +140,8 @@ Obviously, this hardens the task of sentiment analysis. Moreover,it is hard to t
 Another crucial point are dependencies of sentiments: topic, domain, and temporal dependency. Those mainly focus on the problem, that sentiments can have a different meaning, depending on the underlying topic or domain. E.g. a word such as "unpredictable" may have a positive meaning if it used for movie review, but could have a negative sentiment if it used to describe the behavior of a car. Temporal dependency deals with training a classifier with data from a certain time-period and use this classifier for data of another time-period. This may may have an influence on the accuracy of classification as well. \cite{read2005using}
 
 \subsection{Twitter-based Data}
-Twitter is a form of microblog, where users can post small text immediately and the so called tweets are contain real-time reactions to certain events. The social network platform is categorized as microblog as every tweet is limited to 140 signs. This results in people using e.g. abbreviations, emoticons, (intentional) spelling mistakes in order to fit and express their opinion accurate. Moreover, Twitter uses some special characters like the \emph{@} which indicates that the post directed to another user. In addition hashtags are used to refer to special topic. All these special characteristics play a huge role when analyzing tweets. \cite{agarwal2011sentiment, read2005using}
+Twitter is a form of microblog, where users can post small text immediately and the so called tweets are contain real-time reactions to certain events. The social network platform is categorized as microblog as every tweet is limited to 140 signs. This results in people using e.g. abbreviations, emoticons, (intentional) spelling mistakes in order to fit and express their opinion accurate. Moreover, Twitter uses some special characters like the \emph{@} which indicates that the post directed to another user. In addition hashtags are used to refer to special topic.
+Another problem is that Twitter data may contain spam. All these special characteristics play a huge role when analyzing tweets. \cite{agarwal2011sentiment, read2005using}
 
 
 \section{Twitter API} \label{twitterapi}
@@ -148,7 +149,8 @@ Tweets has become to a popular resource for sentiment analysis, as Twitter provi
 
 
 \section{Preprocessing Tweets} \label{preprocessing}
-In this section we will focus on how to conduct sentiment analysis for tweets and suggested approaches.
+In order to achieve the most precise result when classifying tweets, some preprocessing steps are suggested.
+
 
 
 
