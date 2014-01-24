@@ -1,8 +1,0 @@
-This is BibTeX, Version 0.99dThe top-level auxiliary file: sigproc-sp.aux
-The style file: abbrv.bst
-Database file #1: sigproc.bib
-I was expecting a `,' or a `}'---line 25 of file sigproc.bib
- : journal = {Expert Systems with Applications}
- :                                             ",
-I'm skipping whatever remains of this entry
-(There was 1 error message)
