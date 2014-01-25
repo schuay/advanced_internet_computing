@@ -28,7 +28,7 @@
 
 \documentclass{acm_proc_article-sp}
 \usepackage{url}
-
+\usepackage{amsmath}
 
 
 \begin{document}
@@ -263,7 +263,7 @@ Part of speech (POS) tags deal with the syntactic analysis of sentences. E.g. ad
 Some words are known to carry special sentiment, e.g. love, hate, beautiful, great. Also phrases e.g. \texttt{"All that glitters isn't gold."} may be used for feature selection. \cite{liu2010sentimentanalysis}
 
 \subsubsection{Twitter Specifics}
-Obviously URLs, emoticons, hashtags and targets may be used as features as those are considered as carrying special meaning. \cite{gimpel2011part}
+Obviously URLs, emoticons, hashtags and targets are carrying special meaning in each tweet and are therefore also considered being an appropriate feature. \cite{gimpel2011part}
 
 \section{Classifying Tweets} \label{classification}
 
@@ -275,12 +275,27 @@ analyses. It contains the data the will be used to train a classifier.
 \subsection{Training}
 
 \subsection{Evaluation}
-The evaluation of classifiers is the same as for usual machine learning algorithms. Most important are accuracy, precision, and recall.
+The evaluation of classifiers is the same as for usual machine learning algorithms. Typically the most important are accuracy, precision, recall, and F-measure. A huge role play the number of true positives (TP), true negatives (TN), as well as false negatives (FN) and false positive (FP) recognized items. 
+\cite{haddi2013therole, ting2011naive, sokolova2006beyond}
 
-\textbf{[Accurcy:}
-\textbf{Precision:}
-\textbf{Recall:}
- 
+
+
+\begin{equation}
+Accuracy = \frac{TP+TN}{TP+TN+FN+FP}
+\end{equation}
+
+\begin{equation}
+Precision = \frac{TP}{TP+FP}
+\end{equation}
+
+\begin{equation}
+Recall = \frac{TP}{TP+FN}
+\end{equation}
+
+\begin{equation}
+F-measure = \frac{2*Recall*Precision}{Recall+Precision}
+\end{equation}
+
 
 \section{Related Work} \label{related}
 
