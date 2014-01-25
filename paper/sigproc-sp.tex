@@ -28,7 +28,9 @@
 
 \documentclass{acm_proc_article-sp}
 \usepackage{url}
-\usepackage{natbib}
+
+
+
 \begin{document}
 
 \title{Twitter-based Sentiment Analysis}
@@ -122,7 +124,7 @@ sentiment analysis and explain how a classifiers are evaluated.
 
 \terms{Theory}
 
-\keywords{Sentiment Analysis, Opinion Mining, Twitter, Classifier}
+\keywords{Sentiment Analysis, Opinion Mining, Twitter, Classifier, Natural Language Processing}
 
 \section{Introduction} The general opinion about a specific product or service
 has certainly a great influence on its reputation. People often want to know
@@ -208,37 +210,63 @@ and therefore makes the collection of data easy.
 
 \section{Preprocessing Tweets} \label{preprocessing} In order to achieve the
 most precise result when classifying tweets, some preprocessing steps are
-suggested. It need to be remarked, that not all steps are necessary and it may also depends on the data set and the selected classifier how much influence this preprocessing tasks have. In the following some of these approaches mentioned in \cite{ting2011naive, pak2010twitter, go2009twitter, agarwal2011sentiment} are shortly described.
+suggested. Preprocessing describes the cleansing of data and the text preparation for classification. It need to be remarked, that not all steps are necessary and it may also depends on the data set and the selected classifier how much influence this preprocessing tasks have. 
+Generally, preprocessing contains data-cleansing steps, so called \texttt{transformations} and feature selection, also called \texttt{filtering} \cite{haddi2013therole}.
 
 
-\subsection{Stopword Removal}
+\subsection{Transformation}
+Transformation contains all steps that make the data easier to classify, e.g. stripping whitespace, normalization (e.g. to lower case the text), methods for dealing with noisy data etc. 
+In the following some of these approaches mentioned in \cite{ting2011naive, pak2010twitter, go2009twitter, agarwal2011sentiment, pang2008opinion, haddi2013therole} are shortly described.
+
+\subsubsection{Extract Noisy Data}
+The extraction of noisy data includes getting rid of e.g. advertisement/spam. 
+
+\subsubsection{Stopword Removal}
 One of the most popular preprocessing steps is stopword filtering. Stopwords are defined as words that do not contain additional sentimental information and can therefore be removed from the text, as it will only will the text shorter, but does not lead to information loss. Such stopwords are for example: a, the, about, is, ...
 
 
-\subsection{Stemming}
+\subsubsection{Stemming}
 This approach deals with the identification of words with similar or identical meaning but that are not spelled the same due to grammatically reasons, e.g. identifying "was" as a from "be".
 
-\subsection{Emoticon Dictionary}
-Emoticons in tweets may be replaced with its actual" meaning. This approach requires a list with all emoticons and its interpretation and label it e.g. according classifications like extremely-positive, positive, neutral, negative, extremely-negative as suggested in \cite{pak2010twitter}.
+\subsubsection{Emoticon Dictionary}
+Emoticons in tweets may be replaced with its actual meaning. This approach requires a list with all emoticons and its interpretation and label it e.g. according classifications like extremely-positive, positive, neutral, negative, extremely-negative as suggested in \cite{agarwal2011sentiment}.
 
-\subsection{Stripping Emoticon}
-In \cite{agarwal2011sentiment} however, the approach of stripping out emoticons of the training data is suggested. \citeauthor{agarwal2011sentiment} consider emoticons as noisy data and experienced a better performance for the MaxEnt and SVM classifiers they have trained.
+\subsubsection{Stripping Emoticons}
+However, the approach of stripping out emoticons of the training data has also been suggested: \cite{go2009twitter} consider emoticons as noisy data and experienced a better performance for training MaxEnt and SVM classifiers, although the test data may include emoticons.
 
-\subsection{Acronym Dictionary}
+\subsubsection{Acronym Dictionary}
 This preprocessing approach deals with the use of likely abbreviations in Twitter-data. 
 Typical acronyms in tweets are e.g. "lol" (laugh out loud), "brb" (be right back), "gr8" (great) etc.
 
-\subsection{Replacing URLs and Targets}
+\subsubsection{Replacing URLs and Targets}
 Another preprocessing approach is replacing all URLs in tweets with special tag - this way the actual URL will not influence when classifying the data, only the fact that there is a URL will have an impact.
 The same can be done with targets (already mentioned in section~\ref{twitter-based}).
 
-\subsection{Replace Negations}
+\subsubsection{Replace Negations}
 The replacement of all negative words like "non" or "never" by a tag "not" ease the classification as well.
 
-\subsection{Replacing Repeated Characters}
-As pointed out in section~\ref{twitter-based}, some people use repeated letters in words to put more weight on it. In order to make these words comparable it is tried to "normalize" them by replacing all characters that are repeated more than two \cite{go2009twitter} or more than three \cite{agarwal2011sentiment} times.
+\subsubsection{Replacing Repeated Characters}
+As pointed out in section~\ref{twitter-based}, some people use repeated letters in words to put more weight on it. In order to make these words comparable it is tried to "normalize" them by replacing all characters that are repeated more than two (suggested in \cite{go2009twitter}) or more than three times (suggested in \cite{agarwal2011sentiment}).
+
+\subsection{Feature Selection}
+Features are those words or phrases of a text that will be selected to train a classifier are  supposed to carry more sentiment or provide additional information. So the frequency of words may have an influence, or opinion words. Some approaches are described in the following.
+
+\subsubsection{Tokenization and N-grams}
+The data needs to be separated in order to use the words as features. Normally, the text is split by spaces and punctuation marks. In addition there are approaches to keep words like "don't" as one word. \cite{pak2010twitter} Tokenized words are also known as unigrams.
+Using n-grams means that combination of words are used. Unigrams are therefore combined, depending on the \texttt{n}. Approaches include e.g. combining unigrams and bigrams as features. 
+\cite{liu2010sentimentanalysis, go2009twitter}
+
+\subsubsection{Part of Speech}
+Part of speech (POS) tags deal with the syntactic analysis of sentences. E.g. adjectives are assumed to provide sentimental meaning. \cite{liu2010sentimentanalysis} As the nature of tweets, POS taggers for Twitter need adaption, one approach can be found in \cite{gimpel2011part}. 
+
+\subsubsection{Opinion Words}
+Some words are known to carry special sentiment, e.g. love, hate, beautiful, great. Also phrases e.g. \texttt{"All that glitters isn't gold."} may be used for feature selection. \cite{liu2010sentimentanalysis}
+
+\subsubsection{Twitter Specifics}
+Obviously URLs, emoticons, hashtags and targets may be used as features as those are considered as carrying special meaning. \cite{gimpel2011part}
 
 \section{Classifying Tweets} \label{classification}
+
 
 \subsection{Corpus} The corpus is the starting point of each sentiment
 analyses. It contains the data the will be used to train a classifier.
@@ -247,6 +275,12 @@ analyses. It contains the data the will be used to train a classifier.
 \subsection{Training}
 
 \subsection{Evaluation}
+The evaluation of classifiers is the same as for usual machine learning algorithms. Most important are accuracy, precision, and recall.
+
+\textbf{[Accurcy:}
+\textbf{Precision:}
+\textbf{Recall:}
+ 
 
 \section{Related Work} \label{related}
 
