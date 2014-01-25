@@ -28,6 +28,7 @@
 
 \documentclass{acm_proc_article-sp}
 \usepackage{url}
+\usepackage{natbib}
 \begin{document}
 
 \title{Twitter-based Sentiment Analysis}
@@ -183,17 +184,20 @@ review, but could have a negative sentiment if it used to describe the behavior
 of a car. Temporal dependency deals with training a classifier with data from a
 certain time-period and use this classifier for data of another time-period.
 This may may have an influence on the accuracy of classification as well.
-\cite{read2005using}
+\cite{read2005using,pang2008opinion}
 
-\subsection{Twitter-based Data} Twitter is a form of microblog, where users can
+\subsection{Twitter-based Data} \label{twitter-based} 
+Twitter is a form of microblog, where users can
 post small text immediately and the so called tweets are contain real-time
 reactions to certain events. The social network platform is categorized as
 microblog as every tweet is limited to 140 signs. This results in people using
-e.g. abbreviations, emoticons, (intentional) spelling mistakes in order to fit
+e.g. abbreviations, emoticons, slang and (intentional) spelling mistakes in order to fit
 and express their opinion accurate. Moreover, Twitter uses some special
-characters like the \emph{@} which indicates that the post directed to another
+characters like the \emph{@} (so-called target) which indicates that the post directed to another
 user. In addition hashtags are used to refer to special topic.  Another problem
-is that Twitter data may contain spam. All these special characteristics play a
+is that Twitter data may contain spam.
+As the size of tweets is limited, users sometimes try to put more emphasis on words by writing those in uppercase or repeating vocals (e.g. "I'm feeling happyyyyy").
+ All these special characteristics play a
 huge role when analyzing tweets. \cite{agarwal2011sentiment, read2005using}
 
 
@@ -204,10 +208,35 @@ and therefore makes the collection of data easy.
 
 \section{Preprocessing Tweets} \label{preprocessing} In order to achieve the
 most precise result when classifying tweets, some preprocessing steps are
-suggested.
+suggested. It need to be remarked, that not all steps are necessary and it may also depends on the data set and the selected classifier how much influence this preprocessing tasks have. In the following some of these approaches mentioned in \cite{ting2011naive, pak2010twitter, go2009twitter, agarwal2011sentiment} are shortly described.
 
 
+\subsection{Stopword Removal}
+One of the most popular preprocessing steps is stopword filtering. Stopwords are defined as words that do not contain additional sentimental information and can therefore be removed from the text, as it will only will the text shorter, but does not lead to information loss. Such stopwords are for example: a, the, about, is, ...
 
+
+\subsection{Stemming}
+This approach deals with the identification of words with similar or identical meaning but that are not spelled the same due to grammatically reasons, e.g. identifying "was" as a from "be".
+
+\subsection{Emoticon Dictionary}
+Emoticons in tweets may be replaced with its actual" meaning. This approach requires a list with all emoticons and its interpretation and label it e.g. according classifications like extremely-positive, positive, neutral, negative, extremely-negative as suggested in \cite{pak2010twitter}.
+
+\subsection{Stripping Emoticon}
+In \cite{agarwal2011sentiment} however, the approach of stripping out emoticons of the training data is suggested. \citeauthor{agarwal2011sentiment} consider emoticons as noisy data and experienced a better performance for the MaxEnt and SVM classifiers they have trained.
+
+\subsection{Acronym Dictionary}
+This preprocessing approach deals with the use of likely abbreviations in Twitter-data. 
+Typical acronyms in tweets are e.g. "lol" (laugh out loud), "brb" (be right back), "gr8" (great) etc.
+
+\subsection{Replacing URLs and Targets}
+Another preprocessing approach is replacing all URLs in tweets with special tag - this way the actual URL will not influence when classifying the data, only the fact that there is a URL will have an impact.
+The same can be done with targets (already mentioned in section~\ref{twitter-based}).
+
+\subsection{Replace Negations}
+The replacement of all negative words like "non" or "never" by a tag "not" ease the classification as well.
+
+\subsection{Replacing Repeated Characters}
+As pointed out in section~\ref{twitter-based}, some people use repeated letters in words to put more weight on it. In order to make these words comparable it is tried to "normalize" them by replacing all characters that are repeated more than two \cite{go2009twitter} or more than three \cite{agarwal2011sentiment} times.
 
 \section{Classifying Tweets} \label{classification}
 
