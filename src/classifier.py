@@ -4,6 +4,7 @@ import gc
 import math
 import cPickle as pickle
 import re
+import time
 
 import featureselection as fs
 import transformer as tr
@@ -58,18 +59,21 @@ class Classifier:
         referenceList = []
         testSets = [set() for x in [POS, NEG]]
         testList = []
+        start = time.clock()
         for i, (t, label) in enumerate(tuple_set):
             referenceSets[label].add(i)
             referenceList.append(label)
             predicted = self.classify(t)
             testSets[predicted].add(i)
             testList.append(predicted)
+        elapsed = time.clock() - start
 
         tuple_set = None
         gc.collect()
 
         print 'train on %d instances, test on %d instances' % (self.__train_size,
                 sum(map(len, test_sets)))
+        print 'classified evaluation set in %f seconds' % elapsed
         print 'accuracy:', nltk.metrics.accuracy(referenceList, testList)
         print 'pos precision:', nltk.metrics.precision(referenceSets[POS], testSets[POS])
         print 'pos recall:', nltk.metrics.recall(referenceSets[POS], testSets[POS])
