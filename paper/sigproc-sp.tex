@@ -86,13 +86,13 @@
 % 3rd. author
 \alignauthor Stefanie Plieschnegger\\
       0926102\\
-\and  % use '\and' if you need 'another row' of author names
+\and % use '\and' if you need 'another row' of author names
 % 4th. author
 \alignauthor Christian Proske\\
-	 1328245 \\
+         1328245 \\
        \email{}
 % 5th. author
-\alignauthor Mino Sharkhawy  \\
+\alignauthor Mino Sharkhawy \\
       1025887 \\
        \email{}
 }
@@ -111,11 +111,7 @@ Sentiment analysis has become very popular in recent years and especially
 Twitter provides a lot of data to a huge amount of topics which can be
 processed and classified to provide an overall opinion. However, classification
 of Twitter-based data is somehow different to traditional text mining and
-introduce some additional challenges. In this paper typical problems are
-discussed that go along with classification of tweets. We will also shortly
-discuss two popular machine learning algorithms (Naive Bayes and SVM) for
-sentiment analysis and explain how a classifiers are evaluated.
-
+introduce some additional challenges. In this paper the typical steps and problems of classifying tweets are outlined including preprocessing steps, training, and evaluation.
 \end{abstract}
 
 
@@ -142,17 +138,14 @@ of people, especially when classifying microblogging services like Twitter
 \footnote{\url{http://twitter.com}}. The underlying paper gives an overview
 about different sentiment analysis approaches and outlines special problems
 related to the classification of microblogging services. These challenges are
-discussed in section~\ref{analyzingdata}. Section~\ref{twitterapi} gives some
-basic information about the Twitter API. In section~\ref{preprocessing} and
-\ref{classification} it is describes approaches of preprocessing and
-classifying tweets. In section~\ref{related} some related work is introduced
+discussed in section~\ref{analyzingdata}. In section~\ref{preprocessing} transformations of tweets and feature selection are described. \ref{classification} deals with training and evaluation of classifiers. In section~\ref{related} some related work is introduced
 and section~\ref{conclusion} concludes the paper.
 
 
 \section{Analyzing Data} \label{analyzingdata} The analyzing process of text
 and the classification whether its content is rather positive, negative or may
 be considered as neutral, is the core functionality in sentiment analysis. We
-are going to discuss general considerations of classifying data first of all,
+are going to discuss general considerations of classifying data,
 before outlining additional challenges related to Twitter-based data.
 
 \subsection{Text Mining vs. Sentiment Analysis} One would assume, that text
@@ -164,7 +157,7 @@ classify a text. However, sentiment analysis requires to focus on typical
 "sentiment words" for example hate, love, like, regret.  When it comes to
 identify the overall sentiment of a text it turns out that it may contains
 several aspects (e.g. negative and positiver remarks) or may not even contain
-any "signal words" (e.g. terrible, awful, bad) but still has a negative
+any signal word but still has a negative
 meaning.  To underline this problem, here are some examples:
 
 \textit{"My new smartphone is really cool, the display is just gorgeous. The
@@ -173,8 +166,8 @@ battery life is really bad, however."}
 \textsl{"Oh, of course - I have a lot of time. Just keep on using my money for
 paying those really fast and friendly authorities."}
 
-Obviously, this hardens the task of sentiment analysis. Moreover,it is hard to
-teach a machine patterns like sarcasm and to identify the intended meaning
+Obviously, this hardens the task of sentiment analysis. Moreover, it is hard to
+teach a machine patterns like sarcasm or how to identify the intended meaning
 behind words.  \cite{liu2010sentimentanalysis,pang2008opinion}
 
 
@@ -183,9 +176,9 @@ temporal dependency. Those mainly focus on the problem, that sentiments can
 have a different meaning, depending on the underlying topic or domain. E.g. a
 word such as "unpredictable" may have a positive meaning if it used for movie
 review, but could have a negative sentiment if it used to describe the behavior
-of a car. Temporal dependency deals with training a classifier with data from a
-certain time-period and use this classifier for data of another time-period.
-This may may have an influence on the accuracy of classification as well.
+of a car. Temporal dependency describes the problem of training a classifier with data from a
+certain time-period and using this one for data classification of another time-period.
+Those dependencies may have an influence on the accuracy of classification as well.
 \cite{read2005using,pang2008opinion}
 
 \subsection{Twitter-based Data} \label{twitter-based} 
@@ -194,23 +187,17 @@ post small text immediately and the so called tweets are contain real-time
 reactions to certain events. The social network platform is categorized as
 microblog as every tweet is limited to 140 signs. This results in people using
 e.g. abbreviations, emoticons, slang and (intentional) spelling mistakes in order to fit
-and express their opinion accurate. Moreover, Twitter uses some special
-characters like the \emph{@} (so-called target) which indicates that the post directed to another
-user. In addition hashtags are used to refer to special topic.  Another problem
-is that Twitter data may contain spam.
-As the size of tweets is limited, users sometimes try to put more emphasis on words by writing those in uppercase or repeating vocals (e.g. "I'm feeling happyyyyy").
- All these special characteristics play a
+and express their opinion accurate. For example users sometimes try to put more emphasis on words by writing those in uppercase or repeating vocals (e.g. "I'm feeling happyyyyy"). Moreover, Twitter uses some special
+characters like the \emph{@} (so-called target) which indicates that the post is directed to another
+user. In addition hashtags are used to refer to special topics.  Another problem
+is that Twitter data may contain spam. The fact, that tweets can be retweeted should also be kept in mind and may have an influence on the classifier, depending on the strategy of classification.
+All these special characteristics play a
 huge role when analyzing tweets. \cite{agarwal2011sentiment, read2005using}
-
-
-\section{Twitter API} \label{twitterapi} Tweets has become to a popular
-resource for sentiment analysis, as Twitter provides an API to retrieve tweets
-and therefore makes the collection of data easy.
 
 
 \section{Preprocessing Tweets} \label{preprocessing} In order to achieve the
 most precise result when classifying tweets, some preprocessing steps are
-suggested. Preprocessing describes the cleansing of data and the text preparation for classification. It need to be remarked, that not all steps are necessary and it may also depends on the data set and the selected classifier how much influence this preprocessing tasks have. 
+suggested. Preprocessing describes the cleansing of data and the text preparation for classification. It need to be remarked, that not all steps are necessary and it may also depends on the data set and the selected classifier how much influence these preprocessing tasks have. 
 Generally, preprocessing contains data-cleansing steps, so called \texttt{transformations} and feature selection, also called \texttt{filtering} \cite{haddi2013therole}.
 
 
@@ -219,41 +206,40 @@ Transformation contains all steps that make the data easier to classify, e.g. st
 In the following some of these approaches mentioned in \cite{ting2011naive, pak2010twitter, go2009twitter, agarwal2011sentiment, pang2008opinion, haddi2013therole} are shortly described.
 
 \subsubsection{Extract Noisy Data}
-The extraction of noisy data includes getting rid of e.g. advertisement/spam. 
+The extraction of noisy data includes getting rid of e.g. advertisement/spam.
 
 \subsubsection{Stopword Removal}
-One of the most popular preprocessing steps is stopword filtering. Stopwords are defined as words that do not contain additional sentimental information and can therefore be removed from the text, as it will only will the text shorter, but does not lead to information loss. Such stopwords are for example: a, the, about, is, ...
-
+One of the most popular preprocessing steps is stopword filtering. Stopwords are defined as words that do not contain additional sentimental information and can therefore be removed from the text, as it will only make the text shorter, but does not lead to information loss. Such stopwords are for example: a, the, about, is, ...
 
 \subsubsection{Stemming}
-This approach deals with the identification of words with similar or identical meaning but that are not spelled the same due to grammatically reasons, e.g. identifying "was" as a from "be".
+This approach deals with the identification of words that have a similar or identical meaning but are not spelled the same due to grammatically reasons, e.g. identifying "was" as a form of "be".
 
 \subsubsection{Emoticon Dictionary}
-Emoticons in tweets may be replaced with its actual meaning. This approach requires a list with all emoticons and its interpretation and label it e.g. according classifications like extremely-positive, positive, neutral, negative, extremely-negative as suggested in \cite{agarwal2011sentiment}.
+Emoticons in tweets may be replaced with its actual meaning. This approach requires a list with all emoticons and its interpretation. Then those could be labeled e.g. according classifications like extremely-positive, positive, neutral, negative, extremely-negative as suggested in \cite{agarwal2011sentiment}.
 
 \subsubsection{Stripping Emoticons}
-However, the approach of stripping out emoticons of the training data has also been suggested: \cite{go2009twitter} consider emoticons as noisy data and experienced a better performance for training MaxEnt and SVM classifiers, although the test data may include emoticons.
+However, the approach of stripping out emoticons of the training data has also been suggested: \cite{go2009twitter} consider emoticons as noisy data and experienced a better performance for training maximum entropy modeling (MaxEnt) and support vector machine (SVM) classifiers, although the test data may include emoticons.
 
 \subsubsection{Acronym Dictionary}
 This preprocessing approach deals with the use of likely abbreviations in Twitter-data. 
 Typical acronyms in tweets are e.g. "lol" (laugh out loud), "brb" (be right back), "gr8" (great) etc.
 
 \subsubsection{Replacing URLs and Targets}
-Another preprocessing approach is replacing all URLs in tweets with special tag - this way the actual URL will not influence when classifying the data, only the fact that there is a URL will have an impact.
+Another preprocessing approach is replacing all URLs in tweets with special tag - this way the actual URL will not have an influence when classifying the data, only the fact that there is a URL will have an impact.
 The same can be done with targets (already mentioned in section~\ref{twitter-based}).
 
 \subsubsection{Replace Negations}
 The replacement of all negative words like "non" or "never" by a tag "not" ease the classification as well.
 
 \subsubsection{Replacing Repeated Characters}
-As pointed out in section~\ref{twitter-based}, some people use repeated letters in words to put more weight on it. In order to make these words comparable it is tried to "normalize" them by replacing all characters that are repeated more than two (suggested in \cite{go2009twitter}) or more than three times (suggested in \cite{agarwal2011sentiment}).
+As pointed out in section~\ref{twitter-based}, some people use repeated letters in words to put more weight on it. In order to make these words comparable it is tried to "normalize" them by replacing all characters that are repeated more than two (suggested in \cite{go2009twitter}) or more than three times (suggested in \cite{agarwal2011sentiment}). So a word like "happyyyyy" would become "happyy" (respectively "happyyy" if using the three-times-replacing approach). The strategy of replacing sequences by three characters makes the use of emphasized and normal words distinguishable.
 
 \subsection{Feature Selection}
-Features are those words or phrases of a text that will be selected to train a classifier are  supposed to carry more sentiment or provide additional information. So the frequency of words may have an influence, or opinion words. Some approaches are described in the following.
+Features are those words or phrases of a text that will be selected to train a classifier and are  supposed to carry more sentiment or provide additional information. So the frequency of words may have an influence, or opinion words. Some approaches are described in the following.
 
 \subsubsection{Tokenization and N-grams}
-The data needs to be separated in order to use the words as features. Normally, the text is split by spaces and punctuation marks. In addition there are approaches to keep words like "don't" as one word. \cite{pak2010twitter} Tokenized words are also known as unigrams.
-Using n-grams means that combination of words are used. Unigrams are therefore combined, depending on the \texttt{n}. Approaches include e.g. combining unigrams and bigrams as features. 
+The data needs to be separated in order to use the words as features. Normally, the text is split by spaces and punctuation marks. In addition there are approaches to keep words like "don't" as one word \cite{pak2010twitter}. Tokenized words are also known as unigrams.
+Using n-grams means that combinations of words are used. Unigrams are therefore combined, depending on the \texttt{n}. Approaches include e.g. combining unigrams and bigrams as features. 
 \cite{liu2010sentimentanalysis, go2009twitter}
 
 \subsubsection{Part of Speech}
@@ -263,21 +249,33 @@ Part of speech (POS) tags deal with the syntactic analysis of sentences. E.g. ad
 Some words are known to carry special sentiment, e.g. love, hate, beautiful, great. Also phrases e.g. \texttt{"All that glitters isn't gold."} may be used for feature selection. \cite{liu2010sentimentanalysis}
 
 \subsubsection{Twitter Specifics}
-Obviously URLs, emoticons, hashtags and targets are carrying special meaning in each tweet and are therefore also considered being an appropriate feature. \cite{gimpel2011part}
+Obviously URLs, emoticons, hashtags and targets are carrying special meaning in each tweet and are therefore also considered as appropriate features. \cite{gimpel2011part}
 
 \section{Classifying Tweets} \label{classification}
+Twitter has become to a popular resource for sentiment analysis, as it provides a REST API \footnote{\url{https://dev.twitter.com/docs/api/1.1}} and a stream API \footnote{\url{https://dev.twitter.com/docs/streaming-apis}} to retrieve tweets
+and therefore makes the collection of data easy. 
+In this section the basic approach of training and testing classifiers will be outlined.
 
 
-\subsection{Corpus} The corpus is the starting point of each sentiment
-analyses. It contains the data the will be used to train a classifier.
+\subsection{Data Set} The corpus is the starting point of each sentiment
+analyses. It contains the data the will be used to train a classifier and therefore should contain appropriate information. For supervised machine learning approaches, the data set needs to be labeled. There are a lot of data sets available as outlined in \cite{kouloumpis2011twitter}, however it is also possible to collect own data like suggested in \cite{pak2010twitter}.
 
 
 \subsection{Training}
+Classifiers are distinguished between unsupervised and supervised algorithms. Unsupervised ones e.g. rely on signal words and typical phrases and it mainly relies on pattern of POS tags. See \cite{liu2010sentimentanalysis} and \cite{pang2008opinion} for more details.
 
-\subsection{Evaluation}
-The evaluation of classifiers is the same as for usual machine learning algorithms. Typically the most important are accuracy, precision, recall, and F-measure. A huge role play the number of true positives (TP), true negatives (TN), as well as false negatives (FN) and false positive (FP) recognized items. 
-\cite{haddi2013therole, ting2011naive, sokolova2006beyond}
+However, most sentiment classifications are based on supervised learning which requires a labeled data set (e.g. positive and negative), which will be separated into a training set and a testing set. Among the most popular classifiers in sentiment analysis are naive bayes and SVM. 
 
+Naive bayes is a simple algorithm, that generally performs well in sentiment analysis domains. It calculates the likeliness that one object belongs to a class. It has been shown that preprocessing and feature selection play an important role in order to improve the accuracy of naive bayes.
+\cite{ye2009sentiment, ting2011naive}
+
+SVM usually perform better than naive bayes. Its approach is to separate the positive and negative training vectors of the data set with a maximum margin  \cite{ye2009sentiment}.
+
+\subsection{Experiments and Evaluation}
+The evaluation of classifiers is the same as for traditional machine learning algorithms. In order to find the best classifier, the preprocessing steps described in section~\ref{preprocessing} usually are used in different combinations. Moreover, k-fold-cross-validations is a common approach where data is split into k folds, using k-1 folds as training data and 1 as testing set, repeated k-times so that each fold will be used as testing set once. 
+
+ Typically the most important benchmark figures are accuracy, precision, recall, and F-measure. A huge role play the number of true positives (TP), true negatives (TN), as well as false negatives (FN) and false positive (FP) recognized items. 
+\cite{haddi2013therole, ting2011naive, sokolova2006beyond, pak2010twitter, ye2009sentiment}
 
 
 \begin{equation}
