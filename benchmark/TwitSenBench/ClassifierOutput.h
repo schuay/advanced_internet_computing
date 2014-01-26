@@ -25,6 +25,7 @@ public:
     double negRecall = .0;
     int startTime = 0;
     int stopTime = 0;
+    double traininngTime = 0.0;
 
     int getDuration();
 

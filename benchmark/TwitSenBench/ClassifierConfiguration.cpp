@@ -123,6 +123,7 @@ ClassifierOutput* ClassifierConfiguration::handleOutput(){
     std::regex rxPosRecall("pos recall: (.*)");
     std::regex rxNegPrecision("neg precision: (.*)");
     std::regex rxNegRecall("neg recall: (.*)");
+    std::regex rxTrainingTime("classified evaluation set in (.*) seconds");
 
     std::regex rxStartTime("start time: (.*)");
     std::regex rxStopTime("stop time: (.*)");
@@ -153,6 +154,9 @@ ClassifierOutput* ClassifierConfiguration::handleOutput(){
         if(regex_search(line.c_str(), res, rxStopTime)){
             co->stopTime = stringToInt(res[1]);
         }
+        if(regex_search(line.c_str(), res, rxTrainingTime)){
+            co->traininngTime = stringToDouble(res[1]);
+        }
     }
 
     input.close();
@@ -168,7 +172,7 @@ void ClassifierConfiguration::writeToCSV(ClassifierOutput *clOutput){
     bool printHeader = !fileExists(csvFilename);
     ofstream output(csvFilename, fstream::app);
     if(printHeader) {
-        output << "Nr.;Classifier;Transformers;Feature Selector;Trainingset/Testset Ratio;Accuracy;Precision (Positive);Recall (Positive);Precision (Negative);Recall (Negative);Duration (sec)" << endl;
+        output << "Nr.;Classifier;Transformers;Feature Selector;Trainingset/Testset Ratio;Accuracy;Precision (Positive);Recall (Positive);Precision (Negative);Recall (Negative);Classify evaluation set (sec);Duration (sec)" << endl;
     }
     string cutOffRatio = "1:1";
     if(_cutOff == 3) {
@@ -178,7 +182,7 @@ void ClassifierConfiguration::writeToCSV(ClassifierOutput *clOutput){
         cutOffRatio = "3:1";
     }
     //output << benchmarkNr << ";" << getClassifier() << ";" << getTransformer() << ";" << getFeatureSelector() << ";" << cutOffRatio << ";" << clOutput->accuracy << ";" << clOutput->posPrecision << ";" << clOutput->posRecall << ";" << clOutput->negPrecision << ";" << clOutput->negRecall << ";" << (_end - _begin) << endl;
-    output << benchmarkNr << ";" << getClassifier() << ";" << getTransformer() << ";" << getFeatureSelector() << ";" << cutOffRatio << ";" << clOutput->accuracy << ";" << clOutput->posPrecision << ";" << clOutput->posRecall << ";" << clOutput->negPrecision << ";" << clOutput->negRecall << ";" << clOutput->getDuration() << endl;
+    output << benchmarkNr << ";" << getClassifier() << ";" << getTransformer() << ";" << getFeatureSelector() << ";" << cutOffRatio << ";" << clOutput->accuracy << ";" << clOutput->posPrecision << ";" << clOutput->posRecall << ";" << clOutput->negPrecision << ";" << clOutput->negRecall << ";" << clOutput->traininngTime << ";" << clOutput->getDuration() << endl;
     output.close();
     pthread_mutex_unlock(&csv_mutex);
 }

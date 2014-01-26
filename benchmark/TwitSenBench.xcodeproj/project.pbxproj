@@ -207,13 +207,13 @@
 		6502B4B21889B5D700917FC8 /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
-				GCC_FAST_MATH = YES;
+				GCC_FAST_MATH = NO;
 				GCC_PREPROCESSOR_DEFINITIONS = (
 					"DEBUG=1",
 					"$(inherited)",
 					"DEBUG_CHDIR='\"/Users/spookee/Dropbox/Master - TUWien/AIC/Übung/Repository/src/\"'",
 				);
-				LLVM_LTO = YES;
+				LLVM_LTO = NO;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 			};
 			name = Debug;
@@ -223,7 +223,9 @@
 			buildSettings = {
 				GCC_FAST_MATH = YES;
 				GCC_OPTIMIZATION_LEVEL = 3;
+				GCC_UNROLL_LOOPS = YES;
 				LLVM_LTO = YES;
+				LLVM_VECTORIZE_LOOPS = YES;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 			};
 			name = Release;
