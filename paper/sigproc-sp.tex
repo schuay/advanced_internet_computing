@@ -183,7 +183,7 @@ Those dependencies may have an influence on the accuracy of classification as we
 
 \subsection{Twitter-based Data} \label{twitter-based} 
 Twitter is a form of microblog, where users can
-post small text immediately and the so called tweets are contain real-time
+post small text immediately and the so called tweets contain real-time
 reactions to certain events. The social network platform is categorized as
 microblog as every tweet is limited to 140 signs. This results in people using
 e.g. abbreviations, emoticons, slang and (intentional) spelling mistakes in order to fit
@@ -274,7 +274,7 @@ SVM usually perform better than naive bayes. Its approach is to separate the pos
 \subsection{Experiments and Evaluation}
 The evaluation of classifiers is the same as for traditional machine learning algorithms. In order to find the best classifier, the preprocessing steps described in section~\ref{preprocessing} usually are used in different combinations. Moreover, k-fold-cross-validations is a common approach where data is split into k folds, using k-1 folds as training data and 1 as testing set, repeated k-times so that each fold will be used as testing set once. 
 
-Typically the most important benchmark figures are accuracy, precision, recall, and F-measure. A huge role play the number of true positives (TP), true negatives (TN), as well as false negatives (FN) and false positive (FP) recognized items. 
+Typically the most important benchmark figures are accuracy, precision, recall, and F-measure. The number of recognized true positives (TP) and true negatives (TN), as well as the false negatives (FN) and the false positives (FP) are playing a major role.
 \cite{haddi2013therole, ting2011naive, sokolova2006beyond, pak2010twitter, ye2009sentiment}
 
 
@@ -297,11 +297,11 @@ F-measure = \frac{2*Recall*Precision}{Recall+Precision}
 
 \section{Related Work} \label{related}
 The sentiment analysis of Twitter-data has been focused by various researchers. One of the results, described in \cite{agarwal2011sentiment} claims to have an average accuracy of around 60-75~\% (depending on the selected features and labels). 
-The approach of testing different machine learning algorithms (naive bayes, MaxEnt, and SVM) combined with different features in \cite{go2009twitter} revealed an average accuracy of 80~\%, however. This is underlined by the case study in \cite{lin2012large}, which experienced a similar result.
+The approach of testing different machine learning algorithms (naive bayes, MaxEnt and SVM) combined with different features in \cite{go2009twitter} revealed an average accuracy of 80~\%, however. This is underlined by the case study in \cite{lin2012large}, which experienced a similar result.
 
 \section{Conclusion} \label{conclusion}
-When analyzing tweets specific characteristics like the limited size, slang, hashtags, targets etc. must be considered. We have listed typical preprocessing steps for Twitter data and provided an overview of classification approaches. 
-As Twitter provides free access to its data and people and organizations keep interested in aggregated opinions, it is likely that sentiment analysis of tweets will become an even more popular research area in recent years.
+When analyzing tweets, specific characteristics like the limited size, slang, hashtags, targets, etc. must be considered. We have listed typical preprocessing steps for Twitter data and provided an overview of classification approaches. 
+Since Twitter provides free access to its data, and people or organizations are interested in aggregated opinions, it is likely that sentiment analysis of tweets will become an even more popular research area in the future.
 %\end{document}  % This is where a 'short' article might terminate
 
 
