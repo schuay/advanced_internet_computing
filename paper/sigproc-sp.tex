@@ -217,11 +217,12 @@ and normal words distinguishable.
 
 \subsection{Feature Selection}
 
-Features are those words or phrases of a text
-that will be selected to train a classifier and are  supposed to carry more
-sentiment or provide additional information. The frequency of words may have
-an influence, or opinion words. % TODO: Huh??
-Some approaches are described in the following.
+Features are words or phrases of a text which are then used determine sentiment.
+During training, classifiers attempt to form correlations between features and their label,
+while a fully trained classifier attempts to deduce the appropriate label for a set
+of given features. 
+There are several approaches with varying effectiveness,
+some of which are described in the following.
 
 \subsubsection{Tokenization and N-grams}
 
@@ -252,11 +253,13 @@ isn't gold."} may be associated with special meaning during feature selection
 
 \subsubsection{Twitter Specifics}
 
-% TODO: What?? This directly contradicts the paragraph from before describing
-% how URLs are stripped from tweets.
-Obviously URLs, emoticons, hashtags and
-targets are carrying special meaning in each tweet and are therefore also
-considered as appropriate features \cite{gimpel2011part}.
+Due to their informal nature and inherent length limits, tweets must must be treated
+differently in sentiment analysis as compared to other text forms such as movie reviews.
+
+In general, acronyms, slang expressions, and emoticons rise in importance while
+techniques requiring full sentence structures such as POS tagging are less effective \cite{kouloumpis2011twitter}.
+Some approaches assume that URLs, emoticons, and hashtags carry special meanings and are
+therefore also considered as appropriate features \cite{gimpel2011part}.
 
 \section{Classifying Tweets} \label{classification}
 
@@ -270,14 +273,14 @@ approach of training and testing classifiers will be outlined.
 
 \subsection{Data Set}
 
-The corpus is the starting point of each sentiment
-analysis. It contains the data that will be used to train a classifier and
-therefore should contain appropriate information. % TODO: Which information??
-For supervised machine
-learning approaches the data set needs to be labeled, i.e. each training element
+A corpus is the starting point of each sentiment
+analysis, containing the data that will be used to train a classifier.
+In the case of supervised machine
+learning approaches, the data set needs to be labeled, i.e. each training element
 must be assigned a sentiment category (such as positive, negative, or neutral).
-Many data sets are available as outlined in \cite{kouloumpis2011twitter}. It is also
-possible to collect own data as suggested in \cite{pak2010twitter}.
+
+There are several publicly available data sets as outlined in \cite{kouloumpis2011twitter}.
+Another approach is the collect custom data  as suggested in \cite{pak2010twitter}.
 
 
 \subsection{Training}
@@ -333,7 +336,7 @@ Sentiment analysis of Twitter data
 has been the focus of various researchers. One of the results, described in
 \cite{agarwal2011sentiment} claims to have an average accuracy of around
 60-75~\% (depending on the selected features and labels).  The approach of
-testing different machine learning algorithms (naive bayes, MaxEnt and SVM)
+testing different machine learning algorithms (Naive Bayes, MaxEnt and SVM)
 combined with different features in \cite{go2009twitter} revealed an average
 accuracy of 80~\%, however. This is underlined by the case study in
 \cite{lin2012large}, which experienced a similar result.
