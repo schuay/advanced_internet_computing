@@ -160,11 +160,13 @@ def evaluate_features(positive, negative, load, save, cutoff,
 
     classifier.evaluate(trainSets)
 
+NGRAM_DEFAULT = 1
+
 FEAT_DEFAULT = 'aes'
-FEATURE_SELECTORS = { 'aes': fs.AllFeatures([fs.StopWordFilter(fs.AllWords()), fs.Emoticons()])
-                    , 'ae':  fs.AllFeatures([fs.AllWords(), fs.Emoticons()])
-                    , 'a':   fs.AllWords()
-                    , 'as':  fs.StopWordFilter(fs.AllWords())
+FEATURE_SELECTORS = { 'aes': lambda n: fs.AllFeatures([fs.NGram(fs.StopWordFilter(fs.AllWords()), n), fs.Emoticons()])
+                    , 'ae':  lambda n: fs.AllFeatures([fs.NGram(fs.AllWords(), n), fs.Emoticons()])
+                    , 'a':   lambda n: fs.NGram(fs.AllWords(), n)
+                    , 'as':  lambda n: fs.NGram(fs.StopWordFilter(fs.AllWords()), n)
                     }
 
 TRAN_DEFAULT = 'id'
@@ -183,12 +185,14 @@ def usage():
             -l  Loads the classifier from the specified file.
             -c  Specifies the percentage of training tweets (default = 0.75).
             -f  Selects the feature selector. One of %s (default = '%s').
+            -g  Specifies the n for the n-gram feature selector. Can be any positive integer (default = '%s').
             -r  Enables the given transformer. Can be passed multiple times.
                 One of %s (default = '%s').
             -t  Selects the classifier type. One of 'bayes', 'svm' (default).""" %
             ( sys.argv[0]
             , ", ".join(["'" + t + "'" for t in FEATURE_SELECTORS.keys()])
             , FEAT_DEFAULT
+            , NGRAM_DEFAULT
             , ", ".join(["'" + t + "'" for t in TRANSFORMERS.keys()])
             , TRAN_DEFAULT
             ))
@@ -206,9 +210,10 @@ if __name__ == '__main__':
     cutoff = 0.75
     raw_classifier = CLASSIFIERS['svm']
     feature_selector = FEATURE_SELECTORS[FEAT_DEFAULT]
+    ngram = NGRAM_DEFAULT
     transformers = [TRANSFORMERS[TRAN_DEFAULT]]
 
-    opts, args = getopt.getopt(sys.argv[1:], "hc:s:l:p:n:c:t:f:r:")
+    opts, args = getopt.getopt(sys.argv[1:], "hc:s:l:p:n:c:t:f:g:r:")
     for o, a in opts:
         if o == "-s":
             classifier_save = a
@@ -228,6 +233,8 @@ if __name__ == '__main__':
             if not a in FEATURE_SELECTORS:
                 usage()
             feature_selector = FEATURE_SELECTORS[a]
+        elif o == "-g":
+            ngram = int(a)
         elif o == "-r":
             if not a in TRANSFORMERS:
                 usage()
@@ -235,6 +242,7 @@ if __name__ == '__main__':
         else:
             usage()
 
+    feature_selector = feature_selector(ngram)
     evaluate_features( positive_file
                      , negative_file
                      , classifier_load
