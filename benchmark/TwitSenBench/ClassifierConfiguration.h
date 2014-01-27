@@ -28,6 +28,7 @@ private:
     string _classifier;
     string _featureSelector;
     int _cutOff;
+    int _nGram;
 
     void buildClassifier();
     ClassifierOutput* handleOutput();
@@ -51,7 +52,7 @@ private:
 
 public:
     ClassifierConfiguration(){};
-    ClassifierConfiguration(string,string,string,int,string);
+    ClassifierConfiguration(string,string,string,int,int,string);
     string getPickleName();
     string getCommand();
     void start();

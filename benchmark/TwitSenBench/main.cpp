@@ -13,6 +13,9 @@
 #include <pthread.h>
 #include "ClassifierConfiguration.h"
 #include <unistd.h>
+#include <algorithm>
+#include <cstring>
+#include <ctime>
 
 // Multithreading Mutexes
 volatile int running_threads = 0;
@@ -86,6 +89,7 @@ int main(int argc, const char * argv[])
     std::array<std::string, 4> featureSelectors = {"aes","ae","a","as"};
     std::array<std::string, 2> classifiers = {"bayes","svm"};
     std::array<int, 3> cutOffs = {2, 3, 4};
+    std::array<int, 3> nGrams = {1, 2, 3};
     std::array<string, 3> negativeFiles;
     std::array<string, 3> positiveFiles;
     
@@ -100,15 +104,17 @@ int main(int argc, const char * argv[])
     
     for(auto& transformer : transformers) {
         for(auto& featureSelector : featureSelectors){
-            for(auto& classifier : classifiers){
-                for(auto& cutOff : cutOffs){
-                    //std::cout << "python classifier -f " << featureSelector << " -r " << transformer << " -t " << classifier << " -c " << cutOff << "\n";
-                    
-                    ClassifierConfiguration *cc = new ClassifierConfiguration(transformer, featureSelector, classifier, 0+cutOff, benchmarkNr);
-                    cc->positivesFile = positiveFiles[cutOff-2]; // -2 weil der cutoff mit 2 beginnt
-                    cc->negativesFile = negativeFiles[cutOff-2];
-                    //baseConfigurations[bc++] = cc;
-                    baseConfigurations.push_back(cc);
+            for(auto& nGram : nGrams) {
+                for(auto& classifier : classifiers){
+                    for(auto& cutOff : cutOffs){
+                        //std::cout << "python classifier -f " << featureSelector << " -r " << transformer << " -t " << classifier << " -c " << cutOff << "\n";
+                        
+                        ClassifierConfiguration *cc = new ClassifierConfiguration(transformer, featureSelector, classifier, 0+cutOff, nGram, benchmarkNr);
+                        cc->positivesFile = positiveFiles[cutOff-2]; // -2 weil der cutoff mit 2 beginnt
+                        cc->negativesFile = negativeFiles[cutOff-2];
+                        //baseConfigurations[bc++] = cc;
+                        baseConfigurations.push_back(cc);
+                    }
                 }
             }
         }

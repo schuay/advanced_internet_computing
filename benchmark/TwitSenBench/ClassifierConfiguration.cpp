@@ -9,13 +9,15 @@
 #include "ClassifierConfiguration.h"
 #include <regex>
 #include <sstream>
+#include <string>
 
-ClassifierConfiguration::ClassifierConfiguration(string transformer, string featureSelector, string classifier, int cutOff, string bNr)
+ClassifierConfiguration::ClassifierConfiguration(string transformer, string featureSelector, string classifier, int cutOff, int nGram, string bNr)
 {
     _transformer = transformer;
     _featureSelector = featureSelector;
     _classifier = classifier;
     _cutOff = cutOff;
+    _nGram = nGram;
     benchmarkNr = bNr;
 
     outputFilename = "outfiles/" + getPickleName() + ".out";
@@ -23,7 +25,7 @@ ClassifierConfiguration::ClassifierConfiguration(string transformer, string feat
 }
 
 string ClassifierConfiguration::getPickleName() {
-    string tmp(benchmarkNr+"-classifier-"+_classifier + "-" + _transformer + "-" + _featureSelector + "-" + to_string(_cutOff) + ".pickle");
+    string tmp(benchmarkNr+"-classifier-"+_classifier + "-" + _transformer + "-" + _featureSelector + "-" + std::to_string(_nGram) + "-" + to_string(_cutOff) + ".pickle");
     return tmp;
 }
 
@@ -37,7 +39,7 @@ string ClassifierConfiguration::getCommand(){
     }
 
     string tmpTransformers = replaceAll2(_transformer, "+", " -r "); //replaceAll(_transformer, "+", " -r ");
-    return "classifier.py -p "+positivesFile+" -n "+negativesFile+" -s classifier/" + getPickleName() + " -f " + _featureSelector +  " -r " + tmpTransformers + " -t " + _classifier + " -c " + cutOffPercentage;
+    return "classifier.py -p "+positivesFile+" -n "+negativesFile+" -s classifier/" + getPickleName() + " -f " + _featureSelector +  " -r " + tmpTransformers + " -t " + _classifier + " -g " + std::to_string(_nGram) + " -c " + cutOffPercentage;
 }
 
 void ClassifierConfiguration::start(){
@@ -172,7 +174,7 @@ void ClassifierConfiguration::writeToCSV(ClassifierOutput *clOutput){
     bool printHeader = !fileExists(csvFilename);
     ofstream output(csvFilename, fstream::app);
     if(printHeader) {
-        output << "Nr.;Classifier;Transformers;Feature Selector;Trainingset/Testset Ratio;Accuracy;Precision (Positive);Recall (Positive);Precision (Negative);Recall (Negative);Classify evaluation set (sec);Duration (sec)" << endl;
+        output << "Nr.;Classifier;Transformers;Feature Selector;n-gram n;Trainingset/Testset Ratio;Accuracy;Precision (Positive);Recall (Positive);Precision (Negative);Recall (Negative);Classify evaluation set (sec);Duration (sec)" << endl;
     }
     string cutOffRatio = "1:1";
     if(_cutOff == 3) {
@@ -182,7 +184,7 @@ void ClassifierConfiguration::writeToCSV(ClassifierOutput *clOutput){
         cutOffRatio = "3:1";
     }
     //output << benchmarkNr << ";" << getClassifier() << ";" << getTransformer() << ";" << getFeatureSelector() << ";" << cutOffRatio << ";" << clOutput->accuracy << ";" << clOutput->posPrecision << ";" << clOutput->posRecall << ";" << clOutput->negPrecision << ";" << clOutput->negRecall << ";" << (_end - _begin) << endl;
-    output << benchmarkNr << ";" << getClassifier() << ";" << getTransformer() << ";" << getFeatureSelector() << ";" << cutOffRatio << ";" << clOutput->accuracy << ";" << clOutput->posPrecision << ";" << clOutput->posRecall << ";" << clOutput->negPrecision << ";" << clOutput->negRecall << ";" << clOutput->traininngTime << ";" << clOutput->getDuration() << endl;
+    output << benchmarkNr << ";" << getClassifier() << ";" << getTransformer() << ";" << getFeatureSelector() << ";" << std::to_string(_nGram) << ";" << cutOffRatio << ";" << clOutput->accuracy << ";" << clOutput->posPrecision << ";" << clOutput->posRecall << ";" << clOutput->negPrecision << ";" << clOutput->negRecall << ";" << clOutput->traininngTime << ";" << clOutput->getDuration() << endl;
     output.close();
     pthread_mutex_unlock(&csv_mutex);
 }
