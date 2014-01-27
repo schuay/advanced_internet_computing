@@ -89,7 +89,7 @@ int main(int argc, const char * argv[])
     std::array<std::string, 4> featureSelectors = {"aes","ae","a","as"};
     std::array<std::string, 2> classifiers = {"bayes","svm"};
     std::array<int, 3> cutOffs = {2, 3, 4};
-    std::array<int, 3> nGrams = {1, 2, 3};
+    std::array<int, 1> nGrams = {1};
     std::array<string, 3> negativeFiles;
     std::array<string, 3> positiveFiles;
     
