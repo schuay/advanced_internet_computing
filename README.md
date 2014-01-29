@@ -19,6 +19,12 @@ Install all required dependencies:
 * python2-scikit-learn
 * python2-twython: https://github.com/ryanmcgrath/twython
 
+For using stopwords, the nltk-corpus must be installed manually:
+* type 'nltk.download()' in the IDLE
+* in the prompting window select tab 'Corpora'
+* select identifier 'stopwords' in the list and install it
+* instruction details, see e.g. http://johnlaudun.org/20130126-nltk-stopwords/
+
 In case you run into errors in requests/requests-oauthlib, try the quick fix in
 https://github.com/requests/requests-oauthlib/pull/43#issuecomment-18158871.
 
