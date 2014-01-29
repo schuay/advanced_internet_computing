@@ -16,9 +16,8 @@ class App_Form_Request extends Zend_Form
                 ->setRequired();
 
         $e['keywords'] = $this->createElement('Text', 'keywords')
-                ->setLabel('Keywords:')
-                ->setRequired()
-                ->setDescription('Mehrere Keywords mit Komma trennen.');
+                ->setLabel('Keyword:')
+                ->setRequired();
 
         $e['submit'] = $this->createElement('Submit', 'Senden')
                 ->setAttrib('class', 'btn btn-primary');
